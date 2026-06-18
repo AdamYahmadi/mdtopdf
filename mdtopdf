@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import argparse
+import subprocess
+import tempfile
+import shutil
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+RENDER_JS = os.path.join(SCRIPT_DIR, 'render.js')
+
+
+def find_chrome():
+    candidates = [
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        '/Applications/Chromium.app/Contents/MacOS/Chromium',
+        '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser',
+        'google-chrome', 'google-chrome-stable',
+        'chromium', 'chromium-browser',
+        r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+        r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return c
+        found = shutil.which(c)
+        if found:
+            return found
+    return None
+
+
+def convert(input_file, output_file):
+    
+    tmp_html = tempfile.NamedTemporaryFile(suffix='.html', delete=False)
+    tmp_html.close()
+
+    try:
+        subprocess.run(
+            ['node', RENDER_JS, os.path.abspath(input_file), tmp_html.name],
+            check=True, capture_output=True
+        )
+
+        chrome = find_chrome()
+        if not chrome:
+            print("Error: Chrome not found. Install from https://www.google.com/chrome/", file=sys.stderr)
+            sys.exit(1)
+
+        subprocess.run([
+            chrome,
+            '--headless=new',
+            '--no-sandbox',
+            '--disable-gpu',
+            '--disable-dev-shm-usage',
+            '--run-all-compositor-stages-before-draw',
+            f'--print-to-pdf={os.path.abspath(output_file)}',
+            '--print-to-pdf-no-header',
+            '--no-pdf-header-footer',
+            f'file://{tmp_html.name}'
+        ], check=True, capture_output=True)
+
+    finally:
+        os.unlink(tmp_html.name)
+
+    print(f"✓ {output_file}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog='mdtopdf',
+        description='Convert markdown to PDF'
+    )
+    parser.add_argument('input', help='input .md file')
+    parser.add_argument('-o', '--output', help='output .pdf file (default: same name as input)')
+    args = parser.parse_args()
+
+    if not os.path.exists(args.input):
+        print(f"Error: file not found: {args.input}", file=sys.stderr)
+        sys.exit(1)
+
+    output = args.output or os.path.splitext(args.input)[0] + '.pdf'
+    convert(args.input, output)
+
+
+if __name__ == '__main__':
+    main()
