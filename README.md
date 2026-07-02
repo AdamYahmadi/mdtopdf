@@ -45,16 +45,18 @@ output. Four delimiter styles are supported:
 | Dollar signs | `$ ... $`   | `$$ ... $$`   |
 | LaTeX native | `\( ... \)` | `\[ ... \]`   |
 
+For example, you write:
+
 ```markdown
 The relation $E = mc^2$ appears inline, as does \(a^2 + b^2 = c^2\).
 
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
-
-\[
-\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
-\]
 ```
 
+which renders as:
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
 Math inside code blocks and inline code spans is left untouched, and ordinary
-prose with dollar amounts (e.g. "it costs $5 and then $10") is not mistaken for
-math.
+prose with dollar amounts (e.g. "it costs 5 and then 10 dollars") is not
+mistaken for math.
