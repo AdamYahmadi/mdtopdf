@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const path = require('path');
 const { marked } = require('marked');
+const markedKatex = require('marked-katex-extension');
 
 const inputFile = process.argv[2];
 const outputFile = process.argv[3];
@@ -11,10 +13,59 @@ if (!inputFile || !outputFile) {
   process.exit(1);
 }
 
-const md = fs.readFileSync(inputFile, 'utf8');
+const rawMd = fs.readFileSync(inputFile, 'utf8');
+
+function preprocessMath(src) {
+  const stash = [];
+  const mask = (s) => {
+    stash.push(s);
+    return `\u0000MATHMASK${stash.length - 1}\u0000`;
+  };
+
+  let out = src
+    .replace(/^(```|~~~)[^\n]*\n[\s\S]*?^\1[ \t]*$/gm, mask)
+    .replace(/(`+)[^`]*?\1/g, mask);
+
+  out = out
+    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`) 
+    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`); 
+
+  out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, body) =>
+    body.includes('\n') ? `$$\n${body.trim()}\n$$` : m
+  );
+
+  out = out.replace(/\u0000MATHMASK(\d+)\u0000/g, (_, i) => stash[Number(i)]);
+  return out;
+}
+
+const md = preprocessMath(rawMd);
+
+marked.use(
+  markedKatex({
+    throwOnError: false, 
+  })
+);
 
 marked.setOptions({ headerIds: false, mangle: false });
 const body = marked.parse(md);
+const KATEX_DIST = path.join(__dirname, 'node_modules', 'katex', 'dist');
+
+function loadKatexCss() {
+  let css = fs.readFileSync(path.join(KATEX_DIST, 'katex.min.css'), 'utf8');
+
+  css = css.replace(/url\(fonts\/([^)]+\.woff2)\)/g, (match, file) => {
+    const fontPath = path.join(KATEX_DIST, 'fonts', file);
+    const b64 = fs.readFileSync(fontPath).toString('base64');
+    return `url(data:font/woff2;base64,${b64})`;
+  });
+
+  css = css.replace(/,url\(fonts\/[^)]+\.woff\) format\("woff"\)/g, '');
+  css = css.replace(/,url\(fonts\/[^)]+\.ttf\) format\("truetype"\)/g, '');
+
+  return css;
+}
+
+const KATEX_CSS = loadKatexCss();
 
 const GITHUB_CSS = `
 .markdown-body {
@@ -78,6 +129,10 @@ const GITHUB_CSS = `
   padding: .2em .4em; margin: 0; font-size: 85%;
   white-space: break-spaces; background-color: #818b981f; border-radius: 6px;
 }
+/* Display math: give block equations a little breathing room and let long
+   equations scroll horizontally rather than overflow the page. */
+.markdown-body .katex-display { margin: 16px 0; overflow-x: auto; overflow-y: hidden; }
+.markdown-body .katex { font-size: 1.1em; }
 `;
 
 const html = `<!DOCTYPE html>
@@ -85,6 +140,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <style>
+${KATEX_CSS}
 ${GITHUB_CSS}
 @page { size: A4; margin: 15mm 12mm; }
 body { background: #fff; }
