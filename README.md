@@ -47,11 +47,6 @@ sudo rm -rf /usr/local/bin/node_modules
 sudo cp -r node_modules /usr/local/bin/node_modules
 ```
 
-> `render.js` now imports its rendering logic from `mdtohtml.js` (shared with
-> the web version), so both files must sit together in `/usr/local/bin`. If you
-> update one, re-copy both — otherwise the CLI errors with
-> `Cannot find module './mdtohtml'`.
-
 ## Usage
 
 ```bash
