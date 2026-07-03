@@ -1,1 +1,7 @@
 node_modules/
+*.pdf
+/*.html
+.DS_Store
+npm-debug.log
+
+
