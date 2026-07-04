@@ -54,7 +54,6 @@
   .btn:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .btn svg { width: 13px; height: 13px; margin-right: 5px; flex: none; }
 
-  /* shortcut guide */
   .guide-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; transition: opacity .2s ease; }
   .guide-overlay.show { display: flex; }
   .guide-overlay.fade { opacity: 0; pointer-events: none; }
@@ -151,6 +150,9 @@
         <dt>⌘ Z</dt><dd>Undo</dd>
         <dt>⇧ ⌘ Z</dt><dd>Redo</dd>
       </dl>
+      <p style="margin:16px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5;">
+        This app runs on a free server — Rendering may take a few extra seconds.
+      </p>
       <div class="dismiss"><button id="guideDismiss">Got it</button></div>
     </div>
   </div>
@@ -194,6 +196,7 @@
   const sizeVal = document.getElementById('sizeVal');
   const sizeUp = document.getElementById('sizeUp');
   const sizeDown = document.getElementById('sizeDown');
+
   const pdfjsLib = globalThis.pdfjsLib;
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
 
@@ -214,26 +217,41 @@
   sizeUp.addEventListener('click', () => changeSize(1));
   sizeDown.addEventListener('click', () => changeSize(-1));
 
-  const sample = `# A quick proof
+  const sample = `# Markdown to PDF
 
-Type on the left; the right shows your actual PDF, page by page — exactly what
-Download gives you. Use the size control to see how the page count changes.
+Write markdown on the left — your PDF pages appear on the right. Use the **−** / **+** controls to adjust the output text size.
 
 ## Math
 
-Inline: $E = mc^2$, and the LaTeX form \\(a^2 + b^2 = c^2\\).
+Inline equations like $E = mc^2$ and $e^{i\\pi} + 1 = 0$ sit naturally in text.
+
+Display equations get their own line:
 
 $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
 
-## Everything else
+$$\\int_0^\\infty e^{-x^2}\\,dx = \\frac{\\sqrt{\\pi}}{2}$$
 
-| Feature      | In  |
-| ------------ | --- |
-| Inline math  | yes |
-| Display math | yes |
-| Tables       | yes |
+Matrices and cases work too:
 
-> Prose with prices like $5 and $10 stays literal, and so does \`inline code\`.
+$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} \\qquad f(x) = \\begin{cases} x^2 & x \\ge 0 \\\\ -x & x < 0 \\end{cases}$$
+
+## Code
+
+\`\`\`python
+def quadratic(a, b, c):
+    d = b**2 - 4*a*c
+    return (-b + d**0.5) / (2*a)
+\`\`\`
+
+## Tables
+
+| Symbol | Meaning |
+| ------ | ------- |
+| $\\nabla$ | Gradient |
+| $\\partial$ | Partial derivative |
+| $\\infty$ | Infinity |
+
+> Dollar signs in prose like $5 or $10 stay literal — they're not mistaken for math.
 `;
   editor.value = sample;
 
