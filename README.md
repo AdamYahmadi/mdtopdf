@@ -1,6 +1,6 @@
 # mdtopdf
 
-Converts markdown (.md) to PDF, including LaTeX math equations.
+Converts markdown (.md) to PDF, including LaTeX math equations and syntax-highlighted code.
 
 ## Math
 
@@ -22,6 +22,24 @@ $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 Math inside code blocks and inline code spans is left untouched, and ordinary
 prose with dollar amounts (e.g. "it costs $5 and then $10") is not mistaken for
 math.
+
+## Code highlighting
+
+Fenced code blocks are syntax-highlighted with [highlight.js](https://highlightjs.org)
+(~200 languages, auto-detected when no language is tagged). Choose a theme with
+`--theme`:
+
+| Theme          | Style |
+| -------------- | ----- |
+| `light`        | light (default) |
+| `github`       | light |
+| `github-dark`  | dark  |
+| `one-dark`     | dark  |
+| `tokyo-night`  | dark  |
+
+```bash
+mdtopdf input.md --theme tokyo-night
+```
 
 ## Requirements
 
@@ -54,6 +72,10 @@ mdtopdf input.md -o output.pdf
 
 # -o is optional — defaults to same name as input
 mdtopdf input.md
+
+# choose a code highlighting theme (default: light)
+mdtopdf input.md --theme github-dark
+mdtopdf input.md -t one-dark
 ```
 
 ## Web version

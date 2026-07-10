@@ -30,16 +30,16 @@ def find_chrome():
     return None
 
 
-def convert(input_file, output_file):
-    
+def convert(input_file, output_file, theme=None):
+
     tmp_html = tempfile.NamedTemporaryFile(suffix='.html', delete=False)
     tmp_html.close()
 
     try:
-        subprocess.run(
-            ['node', RENDER_JS, os.path.abspath(input_file), tmp_html.name],
-            check=True, capture_output=True
-        )
+        cmd = ['node', RENDER_JS, os.path.abspath(input_file), tmp_html.name]
+        if theme:
+            cmd.append(theme)
+        subprocess.run(cmd, check=True, capture_output=True)
 
         chrome = find_chrome()
         if not chrome:
@@ -66,12 +66,17 @@ def convert(input_file, output_file):
 
 
 def main():
+    themes = ['light', 'github', 'github-dark', 'one-dark', 'tokyo-night']
     parser = argparse.ArgumentParser(
         prog='mdtopdf',
-        description='Convert markdown to PDF'
+        description='Convert markdown to PDF (with LaTeX math and code highlighting)'
     )
     parser.add_argument('input', help='input .md file')
     parser.add_argument('-o', '--output', help='output .pdf file (default: same name as input)')
+    parser.add_argument(
+        '-t', '--theme', choices=themes, default='light', metavar='NAME',
+        help='code highlighting theme: ' + ', '.join(themes) + ' (default: light)'
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
@@ -79,7 +84,7 @@ def main():
         sys.exit(1)
 
     output = args.output or os.path.splitext(args.input)[0] + '.pdf'
-    convert(args.input, output)
+    convert(args.input, output, args.theme)
 
 
 if __name__ == '__main__':
