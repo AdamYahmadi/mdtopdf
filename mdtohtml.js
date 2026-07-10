@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { marked } = require('marked');
 const markedKatex = require('marked-katex-extension');
+const { markedHighlight } = require('marked-highlight');
+const hljs = require('highlight.js');
 
 function preprocessMath(src) {
   const stash = [];
@@ -17,8 +19,8 @@ function preprocessMath(src) {
     .replace(/(`+)[^`]*?\1/g, mask);
 
   out = out
-    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`) 
-    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`);  
+    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`)
+    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`);
 
   out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, body) =>
     body.includes('\n') ? `$$\n${body.trim()}\n$$` : m
@@ -29,6 +31,36 @@ function preprocessMath(src) {
 }
 
 const KATEX_DIST = path.join(__dirname, 'node_modules', 'katex', 'dist');
+
+const THEMES = {
+  light:      { file: 'atom-one-light.css',           bg: '#fafafa', border: '#e6e8eb', dark: false },
+  github:     { file: 'github.css',                   bg: '#f6f8fa', border: '#e6e8eb', dark: false },
+  'github-dark':     { file: 'github-dark.css',       bg: '#0d1117', border: '#30363d', dark: true },
+  'one-dark':        { file: 'atom-one-dark.css',     bg: '#282c34', border: '#3a3f4b', dark: true },
+  'tokyo-night':     { file: 'tokyo-night-dark.css',  bg: '#1a1b26', border: '#2a2e42', dark: true },
+};
+const DEFAULT_THEME = 'light';
+
+function resolveTheme(name) {
+  return THEMES[name] || THEMES[DEFAULT_THEME];
+}
+
+const hljsCssCache = {};
+function loadHljsCss(themeName) {
+  const theme = resolveTheme(themeName);
+  if (hljsCssCache[theme.file]) return hljsCssCache[theme.file];
+  const css = fs.readFileSync(
+    path.join(__dirname, 'node_modules', 'highlight.js', 'styles', theme.file), 'utf8'
+  );
+  hljsCssCache[theme.file] = css;
+  return css;
+}
+
+function codeBlockCss(themeName) {
+  const t = resolveTheme(themeName);
+  return `
+.markdown-body pre { background-color: ${t.bg}; border: 1px solid ${t.border}; }`;
+}
 
 let cachedKatexCss = null;
 function loadKatexCss() {
@@ -98,9 +130,10 @@ const GITHUB_CSS = `
 }
 .markdown-body pre {
   margin-top: 0; margin-bottom: 16px; padding: 12px 14px;
-  font-size: 10px; line-height: 1.45; background-color: #f6f8fa; border-radius: 6px;
+  font-size: 10px; line-height: 1.45; border-radius: 6px;
   font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
   white-space: pre; overflow-x: hidden;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
 .markdown-body pre code {
   display: block; padding: 0; margin: 0;
@@ -111,8 +144,6 @@ const GITHUB_CSS = `
   padding: .2em .4em; margin: 0; font-size: 85%;
   white-space: break-spaces; background-color: #818b981f; border-radius: 6px;
 }
-/* Display math: give block equations a little breathing room and let long
-   equations scroll horizontally rather than overflow the page. */
 .markdown-body .katex-display { margin: 16px 0; overflow-x: auto; overflow-y: hidden; }
 .markdown-body .katex { font-size: 1.1em; }
 `;
@@ -121,8 +152,19 @@ let markedConfigured = false;
 function configureMarked() {
   if (markedConfigured) return;
   marked.use(
+    markedHighlight({
+      langPrefix: 'hljs language-',
+      highlight(code, lang) {
+        const language = lang && hljs.getLanguage(lang) ? lang : null;
+        return language
+          ? hljs.highlight(code, { language }).value
+          : hljs.highlightAuto(code).value;
+      },
+    })
+  );
+  marked.use(
     markedKatex({
-      throwOnError: false, 
+      throwOnError: false,
     })
   );
   marked.setOptions({ headerIds: false, mangle: false });
@@ -140,14 +182,15 @@ function sizeOverrideCss(fontSize) {
 .markdown-body pre { font-size: ${codePx}px; }`;
 }
 
-function documentShell(bodyHtml, fontSize) {
+function documentShell(bodyHtml, fontSize, theme) {
   return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <style>
 ${loadKatexCss()}
-${GITHUB_CSS}${sizeOverrideCss(fontSize)}
+${loadHljsCss(theme)}
+${GITHUB_CSS}${sizeOverrideCss(fontSize)}${codeBlockCss(theme)}
 @page { size: A4; margin: 10mm 9mm; }
 body { background: #fff; }
 .markdown-body { max-width: 100%; margin: 0; padding: 0; box-sizing: border-box; }
@@ -164,7 +207,7 @@ ${bodyHtml}
 function renderMarkdownToHtml(rawMd, opts = {}) {
   configureMarked();
   const body = marked.parse(preprocessMath(rawMd));
-  return documentShell(body, opts.fontSize);
+  return documentShell(body, opts.fontSize, opts.theme);
 }
 
 function renderPreviewHtml(rawMd, opts = {}) {
@@ -184,10 +227,10 @@ function renderPreviewHtml(rawMd, opts = {}) {
     }
     body += piece;
   }
-  return documentShell(body, opts.fontSize);
+  return documentShell(body, opts.fontSize, opts.theme);
 }
 
-module.exports = { renderMarkdownToHtml, renderPreviewHtml, preprocessMath, topLevelSourceLines };
+module.exports = { renderMarkdownToHtml, renderPreviewHtml, preprocessMath, topLevelSourceLines, THEMES, DEFAULT_THEME };
 
 function topLevelSourceLines(rawMd) {
   configureMarked();
