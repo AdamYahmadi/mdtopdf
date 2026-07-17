@@ -1,6 +1,6 @@
 # mdtopdf
 
-Converts markdown (.md) to PDF, including LaTeX math equations and syntax-highlighted code.
+Converts Markdown to PDF, including LaTeX math equations and syntax-highlighted code.
 
 ## Math
 
@@ -41,6 +41,14 @@ Fenced code blocks are syntax-highlighted with [highlight.js](https://highlightj
 mdtopdf input.md --theme tokyo-night
 ```
 
+## Text size
+
+The base text size can be changed with `--size` (8–28 px, default 13). All scale proportionally.
+
+```bash
+mdtopdf input.md --size 16
+```
+
 ## Requirements
 
 - Node.js 16+
@@ -76,11 +84,11 @@ mdtopdf input.md
 # choose a code highlighting theme (default: light)
 mdtopdf input.md --theme github-dark
 mdtopdf input.md -t one-dark
+
+# change the base text size in px (default: 13)
+mdtopdf input.md --size 16
+mdtopdf input.md -s 11
+
+# options combine
+mdtopdf input.md --theme tokyo-night --size 16 -o notes.pdf
 ```
-
-## Web version
-
-There's also a browser UI (live preview + one-click PDF download) that runs the
-**same pipeline** — same HTML renderer, same headless-Chromium print step, same
-output as the CLI. Run it locally with `npm start` (opens on
-`http://localhost:3000`).

@@ -30,7 +30,7 @@ def find_chrome():
     return None
 
 
-def convert(input_file, output_file, theme=None):
+def convert(input_file, output_file, theme=None, size=None):
 
     tmp_html = tempfile.NamedTemporaryFile(suffix='.html', delete=False)
     tmp_html.close()
@@ -38,7 +38,9 @@ def convert(input_file, output_file, theme=None):
     try:
         cmd = ['node', RENDER_JS, os.path.abspath(input_file), tmp_html.name]
         if theme:
-            cmd.append(theme)
+            cmd += ['--theme', theme]
+        if size:
+            cmd += ['--size', str(size)]
         subprocess.run(cmd, check=True, capture_output=True)
 
         chrome = find_chrome()
@@ -65,6 +67,21 @@ def convert(input_file, output_file, theme=None):
     print(f"✓ {output_file}")
 
 
+SIZE_MIN, SIZE_MAX, SIZE_DEFAULT = 8, 28, 13
+
+
+def font_size(value):
+    try:
+        size = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"'{value}' is not an integer")
+    if not SIZE_MIN <= size <= SIZE_MAX:
+        raise argparse.ArgumentTypeError(
+            f"size must be between {SIZE_MIN} and {SIZE_MAX} (got {size})"
+        )
+    return size
+
+
 def main():
     themes = ['light', 'github', 'github-dark', 'one-dark', 'tokyo-night']
     parser = argparse.ArgumentParser(
@@ -77,6 +94,10 @@ def main():
         '-t', '--theme', choices=themes, default='light', metavar='NAME',
         help='code highlighting theme: ' + ', '.join(themes) + ' (default: light)'
     )
+    parser.add_argument(
+        '-s', '--size', type=font_size, default=SIZE_DEFAULT, metavar='N',
+        help=f'base text size in px, {SIZE_MIN}-{SIZE_MAX} (default: {SIZE_DEFAULT})'
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
@@ -84,7 +105,7 @@ def main():
         sys.exit(1)
 
     output = args.output or os.path.splitext(args.input)[0] + '.pdf'
-    convert(args.input, output, args.theme)
+    convert(args.input, output, args.theme, args.size)
 
 
 if __name__ == '__main__':
