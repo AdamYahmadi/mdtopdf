@@ -7,6 +7,7 @@ const markedKatex = require('marked-katex-extension');
 const { markedHighlight } = require('marked-highlight');
 const hljs = require('highlight.js');
 
+
 function preprocessMath(src) {
   const stash = [];
   const mask = (s) => {
@@ -19,8 +20,8 @@ function preprocessMath(src) {
     .replace(/(`+)[^`]*?\1/g, mask);
 
   out = out
-    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`)
-    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`);
+    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`) 
+    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`);  
 
   out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, body) =>
     body.includes('\n') ? `$$\n${body.trim()}\n$$` : m
@@ -29,6 +30,7 @@ function preprocessMath(src) {
   out = out.replace(/\u0000MATHMASK(\d+)\u0000/g, (_, i) => stash[Number(i)]);
   return out;
 }
+
 
 const KATEX_DIST = path.join(__dirname, 'node_modules', 'katex', 'dist');
 
@@ -144,13 +146,27 @@ const GITHUB_CSS = `
   padding: .2em .4em; margin: 0; font-size: 85%;
   white-space: break-spaces; background-color: #818b981f; border-radius: 6px;
 }
+/* Display math: give block equations a little breathing room and let long
+   equations scroll horizontally rather than overflow the page. */
 .markdown-body .katex-display { margin: 16px 0; overflow-x: auto; overflow-y: hidden; }
 .markdown-body .katex { font-size: 1.1em; }
 `;
 
+
 let markedConfigured = false;
 function configureMarked() {
   if (markedConfigured) return;
+  marked.use({
+    walkTokens(token) {
+      if (token.type === 'code' && (token.lang || '').trim().split(/\s+/)[0] === 'mermaid') {
+        let src = token.raw.replace(/^[^\n]*\n/, '').replace(/\n[`~]{3,}\s*$/, '');
+        src = src.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        token.type = 'html';
+        token.text = `<pre class="mermaid">${src}</pre>\n`;
+        token.block = true;
+      }
+    },
+  });
   marked.use(
     markedHighlight({
       langPrefix: 'hljs language-',
@@ -171,6 +187,7 @@ function configureMarked() {
   markedConfigured = true;
 }
 
+
 const DEFAULT_FONT_PX = 13;
 function sizeOverrideCss(fontSize) {
   const size = Number(fontSize);
@@ -180,6 +197,38 @@ function sizeOverrideCss(fontSize) {
 .markdown-body { font-size: ${size}px; }
 .markdown-body tt, .markdown-body code, .markdown-body samp { font-size: ${codePx}px; }
 .markdown-body pre { font-size: ${codePx}px; }`;
+}
+
+function mermaidAssets(bodyHtml, theme) {
+  if (!bodyHtml.includes('class="mermaid"')) return '';
+  const t = resolveTheme(theme);
+  const mermaidTheme = t.dark ? 'dark' : 'default';
+  return `
+<style>
+.markdown-body pre.mermaid {
+  background: transparent; border: 0; padding: 0; margin: 16px 0; text-align: center;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.markdown-body pre.mermaid svg {
+  max-width: 100%;
+  max-height: 250mm;      /* keep within one A4 page (297mm minus margins) */
+  width: auto; height: auto;
+  display: block; margin: 0 auto;
+}
+.markdown-body pre.mermaid:not([data-processed]) { color: transparent; }
+</style>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: false, theme: '${mermaidTheme}', securityLevel: 'strict' });
+try {
+  await mermaid.run({ querySelector: '.mermaid' });
+} catch (e) {
+  console.error('mermaid render error', e);
+}
+// Signal to the print step that diagrams are done.
+window.__mermaidDone = true;
+document.documentElement.setAttribute('data-mermaid-ready', '1');
+</script>`;
 }
 
 function documentShell(bodyHtml, fontSize, theme) {
@@ -200,15 +249,22 @@ body { background: #fff; }
 <article class="markdown-body">
 ${bodyHtml}
 </article>
+${mermaidAssets(bodyHtml, theme)}
 </body>
 </html>`;
 }
 
+/**
+ * @param {string} rawMd
+ * @param {{fontSize?: number}} [opts] 
+ * @returns {string} 
+ */
 function renderMarkdownToHtml(rawMd, opts = {}) {
   configureMarked();
   const body = marked.parse(preprocessMath(rawMd));
   return documentShell(body, opts.fontSize, opts.theme);
 }
+
 
 function renderPreviewHtml(rawMd, opts = {}) {
   configureMarked();
@@ -232,6 +288,10 @@ function renderPreviewHtml(rawMd, opts = {}) {
 
 module.exports = { renderMarkdownToHtml, renderPreviewHtml, preprocessMath, topLevelSourceLines, THEMES, DEFAULT_THEME };
 
+/**
+ * @param {string} rawMd 
+ * @returns {number[]}
+ */
 function topLevelSourceLines(rawMd) {
   configureMarked();
   const tokens = marked.lexer(rawMd);

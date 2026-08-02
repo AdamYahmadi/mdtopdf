@@ -1,7 +1,7 @@
 <h1 align="center">mdtopdf</h1>
 
 <p align="center">
-  Convert Markdown to clean, print-ready PDFs — with LaTeX math and syntax-highlighted code.
+  Convert Markdown to clean, print-ready PDFs — with LaTeX math, syntax-highlighted code, and diagrams.
 </p>
 
 <p align="center">
@@ -9,6 +9,7 @@
   <a href="#usage">Usage</a> ·
   <a href="#math">Math</a> ·
   <a href="#code-highlighting">Highlighting</a> ·
+  <a href="#diagrams">Diagrams</a> ·
   <a href="#web-app">Web app</a>
 </p>
 
@@ -27,6 +28,7 @@ mdtopdf notes.md
 
 - **LaTeX math** rendered with [KaTeX](https://katex.org) — fonts embedded, no network needed
 - **Syntax highlighting** for ~200 languages via [highlight.js](https://highlightjs.org), with selectable themes
+- **Diagrams** from [Mermaid](https://mermaid.js.org) — flowcharts, sequence diagrams, and more
 - **Adjustable text size**, proportional across body, headings, code, and math
 
 ## Requirements
@@ -125,6 +127,39 @@ Choose a theme with `--theme`:
 mdtopdf notes.md --theme tokyo-night
 ```
 
+## Diagrams
+
+Fenced `mermaid` blocks are rendered as diagrams — flowcharts, sequence
+diagrams, class diagrams, state diagrams, and more (see the
+[Mermaid docs](https://mermaid.js.org) for the full syntax).
+
+````markdown
+```mermaid
+graph LR
+    A[Start] --> B{Valid?}
+    B -->|Yes| C[Process]
+    B -->|No| D[Reject]
+    C --> E([Done])
+```
+````
+
+renders as:
+
+```mermaid
+graph LR
+    A[Start] --> B{Valid?}
+    B -->|Yes| C[Process]
+    B -->|No| D[Reject]
+    C --> E([Done])
+```
+
+Diagrams follow the selected `--theme` (dark themes render dark diagrams).
+
+> [!NOTE]
+> Diagram rendering fetches the Mermaid library at build time, so it requires an
+> internet connection. Math, code highlighting, and everything else stay fully
+> offline.
+
 ## Text size
 
 The base text size can be changed with `--size` (8–28 px, default 13).
@@ -134,14 +169,14 @@ mdtopdf notes.md --size 16
 ```
 
 ## Web app
- 
+
 A browser-based editor with **live preview** and one-click PDF download runs the
 **same pipeline** as the CLI.
- 
-**Try it now:** **[mdtopdf.adamyahmadi.com](https://mdtopdf.adamyahmadi.com/)** 
- 
+
+**Try it now:** **[mdtopdf.adamyahmadi.com](https://mdtopdf.adamyahmadi.com/)**
+
 Or run it locally:
- 
+
 ```bash
 npm start
 ```
