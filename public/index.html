@@ -1,573 +1,1796 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>mdtopdf</title>
-<style>
-  :root {
-    --font-ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-editor: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  :root {
-    --ink: #1c1d1f; --ink-soft: #52545a; --muted: #8a8c93;
-    --canvas: #d5d6da; --surface: #f6f7f8; --paper: #ffffff;
-    --line: #d9dade; --line-soft: #e6e7ea; --accent: #2f57d6;
-    --t-head:#08429c; --t-strong:#9a3d00; --t-em:#6a1fb0; --t-code:#06693f;
-    --t-fence:#a01818; --t-link:#0a44c0; --t-url:#4b5563; --t-math:#b01259;
-    --t-list:#08429c; --t-quote:#3f5c35; --t-punct:#4b5563;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mdtopdf</title>
+    <style>
+      :root {
+        --font-ui:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-editor:
+          "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        --font-mono:
+          ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      :root {
+        --ink: #18191b;
+        --ink-soft: #4b4d53;
+        --muted: #85878e;
+        --canvas: #dadbdf;
+        --surface: #f5f6f7;
+        --paper: #ffffff;
+        --line: #dcdde1;
+        --line-soft: #e8e9ec;
+        --accent: #2f57d6;
+        --t-head: #08429c;
+        --t-strong: #9a3d00;
+        --t-em: #6a1fb0;
+        --t-code: #06693f;
+        --t-fence: #a01818;
+        --t-link: #0a44c0;
+        --t-url: #4b5563;
+        --t-math: #b01259;
+        --t-list: #08429c;
+        --t-quote: #3f5c35;
+        --t-punct: #4b5563;
+        --r-sm: 6px;
+        --r-md: 8px;
+        --r-lg: 10px;
+      }
 
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
-  body {
-    background: var(--canvas); color: var(--ink);
-    font-family: var(--font-ui); font-size: 14px; -webkit-font-smoothing: antialiased;
-    display: flex; flex-direction: column; overflow: hidden;
-  }
+      ::selection {
+        background: rgba(47, 87, 214, 0.22);
+      }
 
-  header {
-    display: flex; align-items: center; height: 52px; padding: 0 16px;
-    background: var(--surface); border-bottom: 1px solid var(--line); flex: none;
-  }
-  .wordmark { font-family: var(--font-mono); font-weight: 500; font-size: 15px; letter-spacing: -0.02em; color: var(--ink); }
-  .spacer { flex: 1; }
-  .toolbar { display: flex; align-items: center; gap: 12px; }
-  .status { font-family: var(--font-mono); font-size: 12px; color: #2d8a4e; white-space: nowrap; transition: color .2s ease; }
-  .status.busy { color: #c73a3a; }
-  .status.error { color: #c73a3a; }
-  .divider { width: 1px; height: 20px; background: var(--line); }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: var(--font-ui);
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
 
-  .doc-name { display: flex; align-items: baseline; gap: 1px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
-  .doc-name:focus-within { border-bottom-color: var(--accent); }
-  .doc-name input { font-family: var(--font-mono); font-size: 13px; color: var(--ink); border: 0; background: transparent; outline: none; width: 100px; text-align: right; padding: 0; }
-  .doc-name input:focus-visible { outline: none; }
-  .doc-name .ext { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+      header {
+        display: flex;
+        align-items: center;
+        height: 52px;
+        padding: 0 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+        flex: none;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        position: relative;
+        z-index: 1;
+      }
+      .wordmark {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 14.5px;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+      }
+      .spacer {
+        flex: 1;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+      .status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #2d8a4e;
+        flex: none;
+        transition: background 0.2s ease;
+      }
+      .status.busy::before {
+        background: #c9962f;
+      }
+      .status.error::before {
+        background: #c73a3a;
+      }
+      .divider {
+        width: 1px;
+        height: 20px;
+        background: var(--line);
+      }
 
-  .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease; }
-  .icon-btn:hover { background: rgba(127,127,127,.12); color: var(--ink); }
-  .icon-btn svg { width: 16px; height: 16px; display: block; }
-  .btn { display: inline-flex; align-items: center; height: 30px; font-family: var(--font-ui); font-size: 12.5px; font-weight: 500; letter-spacing: -0.005em; border: 1px solid var(--line); border-radius: 7px; padding: 0 12px; cursor: pointer; background: var(--surface); color: var(--ink); transition: background .15s ease, border-color .15s ease; }
-  .btn:hover { background: #fff; border-color: #bbbcc0; }
-  .btn:disabled { color: var(--muted); cursor: default; background: var(--surface); border-color: var(--line); }
-  .btn:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .btn svg { width: 13px; height: 13px; margin-right: 5px; flex: none; }
+      .doc-name {
+        display: flex;
+        align-items: baseline;
+        gap: 1px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid var(--line);
+        transition: border-color 0.12s ease;
+      }
+      .doc-name:focus-within {
+        border-bottom-color: var(--accent);
+      }
+      .doc-name input {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--ink);
+        border: 0;
+        background: transparent;
+        outline: none;
+        width: 100px;
+        text-align: right;
+        padding: 0;
+      }
+      .doc-name input:focus-visible {
+        outline: none;
+      }
+      .doc-name .ext {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--muted);
+      }
 
-  .guide-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; transition: opacity .2s ease; }
-  .guide-overlay.show { display: flex; }
-  .guide-overlay.fade { opacity: 0; pointer-events: none; }
-  .guide {
-    background: #fff; border-radius: 12px; padding: 28px 32px; max-width: 400px; width: 90%;
-    box-shadow: 0 12px 40px rgba(0,0,0,.18);
-    font-family: var(--font-ui); color: var(--ink);
-  }
-  .guide h2 { margin: 0 0 16px; font-size: 16px; font-weight: 600; }
-  .guide dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; align-items: baseline; }
-  .guide dt { font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 2px 7px; white-space: nowrap; text-align: right; }
-  .guide dd { margin: 0; font-size: 13px; color: var(--ink-soft); }
-  .guide .dismiss { margin-top: 20px; text-align: center; }
-  .guide .dismiss button { font-family: var(--font-ui); font-size: 13px; font-weight: 500; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 6px 16px; border-radius: 6px; transition: background .12s ease; }
-  .guide .dismiss button:hover { background: rgba(47,87,214,.08); }
+      .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: 0;
+        border-radius: var(--r-md);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .icon-btn:hover {
+        background: rgba(127, 127, 127, 0.12);
+        color: var(--ink);
+      }
+      .icon-btn svg {
+        width: 16px;
+        height: 16px;
+        display: block;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        height: 30px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        border: 1px solid var(--ink);
+        border-radius: var(--r-md);
+        padding: 0 12px;
+        cursor: pointer;
+        background: var(--ink);
+        color: #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .btn:hover {
+        background: #000;
+        border-color: #000;
+      }
+      .btn:active {
+        background: #303133;
+        border-color: #303133;
+        box-shadow: none;
+      }
+      .btn:disabled {
+        color: var(--muted);
+        cursor: default;
+        background: var(--surface);
+        border-color: var(--line);
+      }
+      .btn:focus-visible,
+      .icon-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .btn svg {
+        width: 13px;
+        height: 13px;
+        margin-right: 5px;
+        flex: none;
+      }
 
-  main { flex: 1; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); min-height: 0; }
-  .pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
-  .pane.source { border-right: 1px solid var(--line); }
+      .guide-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease;
+      }
+      .guide-overlay.show {
+        display: flex;
+      }
+      .guide-overlay.fade {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .guide {
+        background: var(--paper);
+        border-radius: var(--r-lg);
+        padding: 28px 32px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+        font-family: var(--font-ui);
+        color: var(--ink);
+      }
+      .guide h2 {
+        margin: 0 0 16px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .guide dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px 14px;
+        align-items: baseline;
+      }
+      .guide dt {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-soft);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-bottom-width: 2px;
+        border-radius: var(--r-sm);
+        padding: 2px 7px;
+        white-space: nowrap;
+        text-align: right;
+      }
+      .guide dd {
+        margin: 0;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .guide .dismiss {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .guide .dismiss button {
+        font-family: var(--font-ui);
+        font-size: 13px;
+        font-weight: 500;
+        border: 0;
+        background: none;
+        color: var(--accent);
+        cursor: pointer;
+        padding: 6px 16px;
+        border-radius: var(--r-sm);
+        transition: background 0.12s ease;
+      }
+      .guide .dismiss button:hover {
+        background: rgba(47, 87, 214, 0.08);
+      }
 
-  .pane-head { display: flex; align-items: center; height: 36px; padding: 0 16px; flex: none; border-bottom: 1px solid var(--line-soft); background: var(--surface); }
-  .eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-  .stepper { display: flex; align-items: center; gap: 3px; }
-  .stepper button { width: 22px; height: 22px; padding: 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--ink-soft); font-size: 14px; line-height: 1; cursor: pointer; transition: background .12s ease, color .12s ease; }
-  .stepper button:hover { background: rgba(127,127,127,.12); color: var(--ink); }
-  .stepper button:disabled { opacity: .4; cursor: default; }
-  .stepper #sizeVal { font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); min-width: 34px; text-align: center; }
-  .head-divider { width: 1px; height: 18px; background: var(--line); margin: 0 10px; }
+      main {
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        min-height: 0;
+      }
+      .pane {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        min-width: 0;
+      }
+      .pane.source {
+        border-right: 1px solid var(--line);
+      }
 
-  .theme-picker { position: relative; }
-  .theme-trigger { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 8px; font-family: var(--font-ui); font-size: 12px; color: var(--ink-soft); background: transparent; border: 1px solid var(--line); border-radius: 7px; cursor: pointer; transition: border-color .12s ease, background .12s ease, color .12s ease; }
-  .theme-trigger:hover { border-color: #bbbcc0; color: var(--ink); background: rgba(127,127,127,.04); }
-  .theme-trigger .code-icon { width: 13px; height: 13px; color: var(--muted); flex: none; }
-  .theme-trigger-label { color: var(--muted); }
-  .theme-trigger-value { font-weight: 500; color: var(--ink); }
-  .theme-trigger .chevron { width: 9px; height: 9px; color: var(--muted); margin-left: 1px; transition: transform .15s ease; }
-  .theme-picker.open .theme-trigger { border-color: var(--accent); color: var(--ink); }
-  .theme-picker.open .chevron { transform: rotate(180deg); }
-  .theme-trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+      .pane-head {
+        display: flex;
+        align-items: center;
+        height: 36px;
+        padding: 0 16px;
+        flex: none;
+        border-bottom: 1px solid var(--line-soft);
+        background: var(--surface);
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      .pane-head > * {
+        flex: none;
+      }
+      .pane-head .spacer {
+        flex: 1 0 auto;
+        min-width: 16px;
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .stepper button {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        background: transparent;
+        color: var(--ink-soft);
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        transition:
+          background 0.12s ease,
+          color 0.12s ease;
+      }
+      .stepper button:hover {
+        background: rgba(127, 127, 127, 0.12);
+        color: var(--ink);
+      }
+      .stepper button:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .stepper button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      .stepper #sizeVal {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-soft);
+        min-width: 34px;
+        text-align: center;
+      }
+      .head-divider {
+        width: 1px;
+        height: 18px;
+        background: var(--line);
+        margin: 0 10px;
+      }
 
-  .theme-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; width: 220px; padding: 5px; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,.04), 0 12px 28px rgba(0,0,0,.12); animation: menuIn .12s ease; }
-  @keyframes menuIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-  .theme-menu-head { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 6px 8px 5px; }
-  .theme-option { display: flex; align-items: center; gap: 9px; width: 100%; padding: 7px 8px; font-family: var(--font-ui); font-size: 12.5px; color: var(--ink); background: transparent; border: 0; border-radius: 6px; cursor: pointer; text-align: left; transition: background .1s ease; }
-  .theme-option:hover { background: rgba(47,87,214,.07); }
-  .theme-option.selected { background: rgba(47,87,214,.10); font-weight: 500; }
-  .theme-option .sw { flex: none; width: 26px; height: 18px; border-radius: 4px; background: var(--a); border: 1px solid rgba(0,0,0,.12); position: relative; overflow: hidden; }
-  .theme-option .sw::before { content: ""; position: absolute; left: 3px; top: 4px; width: 8px; height: 2px; border-radius: 1px; background: var(--b); box-shadow: 0 4px 0 var(--c), 10px 0 0 var(--d); }
-  .theme-option .tag { margin-left: auto; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+      .view-toggle {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 2px;
+        background: var(--canvas);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        flex: none;
+      }
+      .view-toggle-btn {
+        height: 22px;
+        padding: 0 10px;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        transition:
+          background 0.12s ease,
+          color 0.12s ease;
+      }
+      .view-toggle-btn:hover {
+        color: var(--ink);
+      }
+      .view-toggle-btn.active {
+        background: var(--paper);
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .view-toggle-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
 
-  .editor { position: relative; flex: 1; min-height: 0; background: var(--surface); }
-  .editor pre, .editor textarea { margin: 0; border: 0; padding: 20px 22px; font-family: var(--font-editor); font-size: 14px; line-height: 1.5; letter-spacing: normal; word-spacing: normal; font-variant-ligatures: none; font-kerning: none; text-rendering: geometricPrecision; tab-size: 2; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; }
-  .editor pre { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--ink); z-index: 0; scrollbar-gutter: stable; }
-  .editor textarea { position: absolute; inset: 0; width: 100%; height: 100%; overflow: auto; resize: none; outline: none; scrollbar-gutter: stable; background: transparent; color: transparent; caret-color: var(--accent); z-index: 1; }
-  .editor textarea::selection { background: rgba(127,140,200,.30); }
+      .theme-picker {
+        position: relative;
+      }
+      .theme-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 26px;
+        padding: 0 8px;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        color: var(--ink-soft);
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        cursor: pointer;
+        transition:
+          border-color 0.12s ease,
+          background 0.12s ease,
+          color 0.12s ease;
+      }
+      .theme-trigger:hover {
+        border-color: #bbbcc0;
+        color: var(--ink);
+        background: rgba(127, 127, 127, 0.04);
+      }
+      .theme-trigger .code-icon {
+        width: 13px;
+        height: 13px;
+        color: var(--muted);
+        flex: none;
+      }
+      .theme-trigger-label {
+        color: var(--muted);
+      }
+      .theme-trigger-value {
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .theme-trigger .chevron {
+        width: 9px;
+        height: 9px;
+        color: var(--muted);
+        margin-left: 1px;
+        transition: transform 0.15s ease;
+      }
+      .theme-picker.open .theme-trigger {
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+      .theme-picker.open .chevron {
+        transform: rotate(180deg);
+      }
+      .theme-trigger:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
 
-  .tok-head { color: var(--t-head); font-weight: 700; }
-  .tok-strong { color: var(--t-strong); font-weight: 700; }
-  .tok-em { color: var(--t-em); font-style: italic; }
-  .tok-code { color: var(--t-code); }
-  .tok-fence { color: var(--t-fence); }
-  .tok-link { color: var(--t-link); text-decoration: underline; text-underline-offset: 2px; }
-  .tok-url { color: var(--t-url); }
-  .tok-math { color: var(--t-math); }
-  .tok-quote { color: var(--t-quote); font-style: italic; }
-  .tok-list { color: var(--t-list); font-weight: 600; }
-  .tok-punct { color: var(--t-punct); }
-  .tok-hr { color: var(--t-punct); }
+      .theme-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        z-index: 40;
+        width: 220px;
+        padding: 5px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow:
+          0 4px 6px rgba(0, 0, 0, 0.04),
+          0 12px 28px rgba(0, 0, 0, 0.12);
+        animation: menuIn 0.12s ease;
+      }
+      @keyframes menuIn {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .theme-menu-head {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 6px 8px 5px;
+      }
+      .theme-option {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        padding: 7px 8px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        color: var(--ink);
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.1s ease;
+      }
+      .theme-option:hover {
+        background: rgba(47, 87, 214, 0.07);
+      }
+      .theme-option.selected {
+        background: rgba(47, 87, 214, 0.1);
+        font-weight: 500;
+      }
+      .theme-option:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .theme-option .sw {
+        flex: none;
+        width: 26px;
+        height: 18px;
+        border-radius: 4px;
+        background: var(--a);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        position: relative;
+        overflow: hidden;
+      }
+      .theme-option .sw::before {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 4px;
+        width: 8px;
+        height: 2px;
+        border-radius: 1px;
+        background: var(--b);
+        box-shadow:
+          0 4px 0 var(--c),
+          10px 0 0 var(--d);
+      }
+      .theme-option .tag {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
 
-  .drop { position: absolute; inset: 9px; z-index: 3; border: 1.5px dashed var(--accent); border-radius: 9px; background: rgba(47,87,214,.06); display: none; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 13px; color: var(--accent); pointer-events: none; }
-  .editor.dragging .drop { display: flex; }
+      .editor {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        background: var(--surface);
+        box-shadow: inset 0 0 0 0 var(--accent);
+        transition: box-shadow 0.12s ease;
+      }
+      .editor:focus-within {
+        box-shadow: inset 2px 0 0 0 var(--accent);
+      }
+      .editor pre,
+      .editor textarea {
+        margin: 0;
+        border: 0;
+        padding: 20px 22px;
+        font-family: var(--font-editor);
+        font-size: 14px;
+        line-height: 1.5;
+        letter-spacing: normal;
+        word-spacing: normal;
+        font-variant-ligatures: none;
+        font-kerning: none;
+        text-rendering: geometricPrecision;
+        tab-size: 2;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: break-word;
+      }
+      .editor pre {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        color: var(--ink);
+        z-index: 0;
+        scrollbar-gutter: stable;
+      }
+      .editor textarea {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        resize: none;
+        outline: none;
+        scrollbar-gutter: stable;
+        background: transparent;
+        color: transparent;
+        caret-color: var(--accent);
+        z-index: 1;
+      }
+      .editor textarea::selection {
+        background: rgba(127, 140, 200, 0.3);
+      }
 
-  .pane.preview { background: var(--canvas); }
-  .proof { position: relative; flex: 1; min-height: 0; overflow: auto; background: var(--canvas); padding: 28px 32px; min-width: 0; scrollbar-gutter: stable; }
-  .proof .page { width: fit-content; margin: 0 auto 24px; overflow: hidden; border-radius: 1px; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 28px rgba(0,0,0,.13); max-width: 100%; }
-  .proof .page canvas { display: block; background: #fff; }
-  .proof .empty { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; text-align: center; padding: 24px; pointer-events: none; }
-  .proof .empty.show { display: flex; }
+      .tok-head {
+        color: var(--t-head);
+        font-weight: 700;
+      }
+      .tok-strong {
+        color: var(--t-strong);
+        font-weight: 700;
+      }
+      .tok-em {
+        color: var(--t-em);
+        font-style: italic;
+      }
+      .tok-code {
+        color: var(--t-code);
+      }
+      .tok-fence {
+        color: var(--t-fence);
+      }
+      .tok-link {
+        color: var(--t-link);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .tok-url {
+        color: var(--t-url);
+      }
+      .tok-math {
+        color: var(--t-math);
+      }
+      .tok-quote {
+        color: var(--t-quote);
+        font-style: italic;
+      }
+      .tok-list {
+        color: var(--t-list);
+        font-weight: 600;
+      }
+      .tok-punct {
+        color: var(--t-punct);
+      }
+      .tok-hr {
+        color: var(--t-punct);
+      }
 
-  @media (max-width: 820px) {
-    body { overflow: auto; }
-    main { grid-template-columns: 1fr; }
-    .pane.source { border-right: 0; border-bottom: 1px solid var(--line); }
-    .pane { min-height: 64vh; }
-    .doc-name, .divider { display: none; }
-  }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-</style>
-</head>
-<body>
-  <header>
-    <div class="wordmark">mdtopdf</div>
-    <a class="icon-btn" href="https://github.com/AdamYahmadi/mdtopdf" target="_blank" rel="noopener" title="GitHub" aria-label="View on GitHub">
-      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-    </a>
-    <div class="spacer"></div>
-    <div class="toolbar">
-      <span class="status" id="status">Ready</span>
-      <span class="divider"></span>
-      <div class="doc-name">
-        <input id="filename" placeholder="document" spellcheck="false" aria-label="Output file name" />
-        <span class="ext">.pdf</span>
+      .pane.preview {
+        background: var(--canvas);
+      }
+      .proof {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        background: var(--canvas);
+        padding: 14px 18px;
+        min-width: 0;
+        scrollbar-gutter: stable;
+      }
+      .proof .page {
+        width: fit-content;
+        margin: 0 auto 24px;
+        overflow: hidden;
+        border-radius: 1px;
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.08),
+          0 8px 28px rgba(0, 0, 0, 0.13);
+        max-width: 100%;
+        transition: box-shadow 0.15s ease;
+      }
+      .proof .page:hover {
+        box-shadow:
+          0 2px 5px rgba(0, 0, 0, 0.1),
+          0 12px 36px rgba(0, 0, 0, 0.17);
+      }
+      .proof .page img {
+        opacity: 0;
+        transition: opacity 0.15s ease;
+      }
+      .proof .page img.loaded {
+        opacity: 1;
+      }
+      .proof .empty {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+        padding: 24px;
+        pointer-events: none;
+      }
+      .proof .empty.show {
+        display: flex;
+      }
+
+      .proof-continuous {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        background: var(--paper);
+      }
+      .proof-continuous iframe.continuous-frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+        background: var(--paper);
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        z-index: 0;
+      }
+      .proof-continuous iframe.continuous-frame.active {
+        visibility: visible;
+        opacity: 1;
+        z-index: 1;
+      }
+      .proof-continuous .empty {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+        padding: 24px;
+        background: var(--canvas);
+        pointer-events: none;
+      }
+      .proof-continuous .empty.show {
+        display: flex;
+      }
+      .empty-icon {
+        width: 30px;
+        height: 30px;
+        color: var(--muted);
+        opacity: 0.5;
+      }
+      .empty-text {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .empty-title {
+        font-weight: 500;
+        color: var(--ink-soft);
+      }
+      .empty-sub {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .empty-sub:empty {
+        display: none;
+      }
+
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.18);
+        border-radius: 20px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, 0.28);
+        background-clip: content-box;
+      }
+
+      @media (max-width: 820px) {
+        body {
+          overflow: auto;
+        }
+        main {
+          grid-template-columns: 1fr;
+        }
+        .pane.source {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .pane {
+          min-height: 64vh;
+        }
+        .doc-name,
+        .divider {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wordmark">mdtopdf</div>
+      <a
+        class="icon-btn"
+        href="https://github.com/AdamYahmadi/mdtopdf"
+        target="_blank"
+        rel="noopener"
+        title="GitHub"
+        aria-label="View on GitHub"
+      >
+        <svg viewBox="0 0 16 16" fill="currentColor">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+          />
+        </svg>
+      </a>
+      <div class="spacer"></div>
+      <div class="toolbar">
+        <span class="status" id="status">Ready</span>
+        <span class="divider"></span>
+        <div class="doc-name">
+          <input
+            id="filename"
+            placeholder="document"
+            spellcheck="false"
+            aria-label="Output file name"
+          />
+          <span class="ext">.pdf</span>
+        </div>
+        <button class="btn" id="download">
+          <svg
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M8 2v8m0 0L5 7.5M8 10l3-2.5M3 13h10" />
+          </svg>
+          Download
+        </button>
       </div>
-      <button class="btn" id="download">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0L5 7.5M8 10l3-2.5M3 13h10"/></svg>
-        Download
-      </button>
-    </div>
-  </header>
+    </header>
 
-  <div class="guide-overlay" id="guide">
-    <div class="guide">
-      <h2>Shortcuts</h2>
-      <dl>
-        <dt>⌘ S</dt><dd>Download PDF</dd>
-        <dt>⌘ Z</dt><dd>Undo</dd>
-        <dt>⇧ ⌘ Z</dt><dd>Redo</dd>
-      </dl>
-      <p style="margin:16px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5;">
-        This app runs on a free server — rendering may take a few extra seconds.
-      </p>
-      <div class="dismiss"><button id="guideDismiss">Got it</button></div>
-    </div>
-  </div>
-
-  <main>
-    <section class="pane source">
-      <div class="pane-head"><span class="eyebrow">Source</span></div>
-      <div class="editor" id="editorWrap">
-        <pre id="highlight" aria-hidden="true"></pre>
-        <textarea id="editor" spellcheck="false" placeholder="Start typing markdown…"></textarea>
-        <div class="drop">Drop a .md file to open</div>
+    <div class="guide-overlay" id="guide">
+      <div class="guide">
+        <h2>Shortcuts</h2>
+        <dl>
+          <dt>⌘ S</dt>
+          <dd>Download PDF</dd>
+          <dt>⌘ Z</dt>
+          <dd>Undo</dd>
+          <dt>⇧ ⌘ Z</dt>
+          <dd>Redo</dd>
+        </dl>
+        <p
+          style="
+            margin: 16px 0 0;
+            font-size: 12.5px;
+            color: #c73a3a;
+            line-height: 1.5;
+          "
+        >
+          This app runs on a free server — the first render may take a few extra
+          seconds to warm up.
+        </p>
+        <div class="dismiss"><button id="guideDismiss">Got it</button></div>
       </div>
-    </section>
+    </div>
 
-    <section class="pane preview">
-      <div class="pane-head">
-        <span class="eyebrow">Pages</span>
-        <div class="spacer"></div>
-        <div class="theme-picker" id="themePicker">
-          <button type="button" class="theme-trigger" id="themeTrigger" aria-haspopup="listbox" aria-expanded="false" title="Syntax highlighting theme for code blocks">
-            <svg class="code-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4.5 2.5 8l3 3.5M10.5 4.5 13.5 8l-3 3.5"/></svg>
-            <span class="theme-trigger-label">Code theme</span>
-            <span class="theme-trigger-value" id="themeCurrent">Light</span>
-            <svg class="chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M2.5 4 5 6.5 7.5 4"/></svg>
-          </button>
-          <div class="theme-menu" id="themeMenu" role="listbox" aria-label="Code highlighting theme" hidden>
-            <div class="theme-menu-head">Syntax highlighting</div>
-            <button type="button" class="theme-option" role="option" data-theme="light" data-label="Light"><span class="sw" style="--a:#fafafa;--b:#a626a4;--c:#50a14f;--d:#4078f2"></span>Light<span class="tag">light</span></button>
-            <button type="button" class="theme-option" role="option" data-theme="github" data-label="GitHub"><span class="sw" style="--a:#f6f8fa;--b:#cf222e;--c:#0a3069;--d:#0550ae"></span>GitHub<span class="tag">light</span></button>
-            <button type="button" class="theme-option" role="option" data-theme="github-dark" data-label="GitHub Dark"><span class="sw" style="--a:#0d1117;--b:#ff7b72;--c:#a5d6ff;--d:#79c0ff"></span>GitHub Dark<span class="tag">dark</span></button>
-            <button type="button" class="theme-option" role="option" data-theme="one-dark" data-label="One Dark"><span class="sw" style="--a:#282c34;--b:#c678dd;--c:#98c379;--d:#61afef"></span>One Dark<span class="tag">dark</span></button>
-            <button type="button" class="theme-option" role="option" data-theme="tokyo-night" data-label="Tokyo Night"><span class="sw" style="--a:#1a1b26;--b:#bb9af7;--c:#9ece6a;--d:#7aa2f7"></span>Tokyo Night<span class="tag">dark</span></button>
+    <main>
+      <section class="pane source">
+        <div class="pane-head"><span class="eyebrow">Source</span></div>
+        <div class="editor" id="editorWrap">
+          <pre id="highlight" aria-hidden="true"></pre>
+          <textarea
+            id="editor"
+            spellcheck="false"
+            placeholder="Start typing markdown…"
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="pane preview">
+        <div class="pane-head">
+          <div class="view-toggle" role="group" aria-label="Preview mode">
+            <button
+              type="button"
+              class="view-toggle-btn"
+              id="viewContinuous"
+              data-view="continuous"
+              aria-pressed="false"
+            >
+              Continuous
+            </button>
+            <button
+              type="button"
+              class="view-toggle-btn"
+              id="viewPages"
+              data-view="pages"
+              aria-pressed="true"
+            >
+              Pages
+            </button>
+          </div>
+          <div class="spacer"></div>
+          <div class="theme-picker" id="themePicker">
+            <button
+              type="button"
+              class="theme-trigger"
+              id="themeTrigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              title="Syntax highlighting theme for code blocks"
+            >
+              <svg
+                class="code-icon"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5.5 4.5 2.5 8l3 3.5M10.5 4.5 13.5 8l-3 3.5" />
+              </svg>
+              <span class="theme-trigger-label">Code theme</span>
+              <span class="theme-trigger-value" id="themeCurrent">Light</span>
+              <svg
+                class="chevron"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              >
+                <path d="M2.5 4 5 6.5 7.5 4" />
+              </svg>
+            </button>
+            <div
+              class="theme-menu"
+              id="themeMenu"
+              role="listbox"
+              aria-label="Code highlighting theme"
+              hidden
+            >
+              <div class="theme-menu-head">Syntax highlighting</div>
+              <button
+                type="button"
+                class="theme-option"
+                role="option"
+                data-theme="light"
+                data-label="Light"
+              >
+                <span
+                  class="sw"
+                  style="--a: #fafafa; --b: #a626a4; --c: #50a14f; --d: #4078f2"
+                ></span
+                >Light<span class="tag">light</span>
+              </button>
+              <button
+                type="button"
+                class="theme-option"
+                role="option"
+                data-theme="github"
+                data-label="GitHub"
+              >
+                <span
+                  class="sw"
+                  style="--a: #f6f8fa; --b: #cf222e; --c: #0a3069; --d: #0550ae"
+                ></span
+                >GitHub<span class="tag">light</span>
+              </button>
+              <button
+                type="button"
+                class="theme-option"
+                role="option"
+                data-theme="github-dark"
+                data-label="GitHub Dark"
+              >
+                <span
+                  class="sw"
+                  style="--a: #0d1117; --b: #ff7b72; --c: #a5d6ff; --d: #79c0ff"
+                ></span
+                >GitHub Dark<span class="tag">dark</span>
+              </button>
+              <button
+                type="button"
+                class="theme-option"
+                role="option"
+                data-theme="one-dark"
+                data-label="One Dark"
+              >
+                <span
+                  class="sw"
+                  style="--a: #282c34; --b: #c678dd; --c: #98c379; --d: #61afef"
+                ></span
+                >One Dark<span class="tag">dark</span>
+              </button>
+              <button
+                type="button"
+                class="theme-option"
+                role="option"
+                data-theme="tokyo-night"
+                data-label="Tokyo Night"
+              >
+                <span
+                  class="sw"
+                  style="--a: #1a1b26; --b: #bb9af7; --c: #9ece6a; --d: #7aa2f7"
+                ></span
+                >Tokyo Night<span class="tag">dark</span>
+              </button>
+            </div>
+          </div>
+          <span class="head-divider"></span>
+          <div class="stepper" role="group" aria-label="Preview text size">
+            <button id="sizeDown" aria-label="Decrease text size">
+              &minus;
+            </button>
+            <span id="sizeVal" title="Preview text size">13</span>
+            <button id="sizeUp" aria-label="Increase text size">+</button>
           </div>
         </div>
-        <span class="head-divider"></span>
-        <div class="stepper" role="group" aria-label="PDF text size">
-          <button id="sizeDown" aria-label="Decrease text size">&minus;</button>
-          <span id="sizeVal" title="PDF text size">13</span>
-          <button id="sizeUp" aria-label="Increase text size">+</button>
+        <div class="proof" id="proof">
+          <div class="empty" id="empty">
+            <svg
+              class="empty-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 2.5h9l3 3V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z" />
+              <path d="M15 2.5V6h3M9 12h6M9 15.5h6M9 8.5h3" />
+            </svg>
+            <span class="empty-text"
+              ><span class="empty-title"></span><span class="empty-sub"></span
+            ></span>
+          </div>
         </div>
-      </div>
-      <div class="proof" id="proof">
-        <div class="empty" id="empty"></div>
-      </div>
-    </section>
-  </main>
+        <div class="proof-continuous" id="proofContinuous" hidden>
+          <iframe
+            id="continuousFrameA"
+            class="continuous-frame active"
+            title="Continuous preview"
+          ></iframe>
+          <iframe
+            id="continuousFrameB"
+            class="continuous-frame"
+            title="Continuous preview"
+            aria-hidden="true"
+          ></iframe>
+          <div class="empty" id="emptyContinuous">
+            <svg
+              class="empty-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 2.5h9l3 3V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z" />
+              <path d="M15 2.5V6h3M9 12h6M9 15.5h6M9 8.5h3" />
+            </svg>
+            <span class="empty-text"
+              ><span class="empty-title"></span><span class="empty-sub"></span
+            ></span>
+          </div>
+        </div>
+      </section>
+    </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
-<script type="module">
-  const editor = document.getElementById('editor');
-  const highlight = document.getElementById('highlight');
-  const proof = document.getElementById('proof');
-  const emptyMsg = document.getElementById('empty');
-  const statusEl = document.getElementById('status');
-  const downloadBtn = document.getElementById('download');
-  const filename = document.getElementById('filename');
-  const editorWrap = document.getElementById('editorWrap');
-  const sizeVal = document.getElementById('sizeVal');
-  const sizeUp = document.getElementById('sizeUp');
-  const sizeDown = document.getElementById('sizeDown');
-  const themePicker = document.getElementById('themePicker');
-  const themeTrigger = document.getElementById('themeTrigger');
-  const themeMenu = document.getElementById('themeMenu');
-  const themeCurrent = document.getElementById('themeCurrent');
-  const themeOptions = Array.from(themeMenu.querySelectorAll('.theme-option'));
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
+      type="module"
+    ></script>
+    <script type="module">
+      const editor = document.getElementById("editor");
+      const highlight = document.getElementById("highlight");
+      const proof = document.getElementById("proof");
+      const emptyMsg = document.getElementById("empty");
+      const statusEl = document.getElementById("status");
+      const downloadBtn = document.getElementById("download");
+      const filename = document.getElementById("filename");
+      const sizeVal = document.getElementById("sizeVal");
+      const sizeUp = document.getElementById("sizeUp");
+      const sizeDown = document.getElementById("sizeDown");
+      const themePicker = document.getElementById("themePicker");
+      const themeTrigger = document.getElementById("themeTrigger");
+      const themeMenu = document.getElementById("themeMenu");
+      const themeCurrent = document.getElementById("themeCurrent");
+      const themeOptions = Array.from(
+        themeMenu.querySelectorAll(".theme-option"),
+      );
+      const viewPagesBtn = document.getElementById("viewPages");
+      const viewContinuousBtn = document.getElementById("viewContinuous");
+      const proofContinuous = document.getElementById("proofContinuous");
+      const emptyContinuous = document.getElementById("emptyContinuous");
+      let activeFrame = document.getElementById("continuousFrameA");
+      let bufferFrame = document.getElementById("continuousFrameB");
 
-  const pdfjsLib = globalThis.pdfjsLib;
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+      const pdfjsLib = globalThis.pdfjsLib;
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
 
-  const THEME_NAMES = ['light', 'github', 'github-dark', 'one-dark', 'tokyo-night'];
-  let theme = localStorage.getItem('mdtopdf-theme');
-  if (!THEME_NAMES.includes(theme)) theme = 'light';
+      const THEME_NAMES = [
+        "light",
+        "github",
+        "github-dark",
+        "one-dark",
+        "tokyo-night",
+      ];
+      let theme = localStorage.getItem("mdtopdf-theme");
+      if (!THEME_NAMES.includes(theme)) theme = "light";
 
-  function reflectTheme() {
-    const opt = themeOptions.find((o) => o.dataset.theme === theme) || themeOptions[0];
-    themeCurrent.textContent = opt.dataset.label;
-    themeOptions.forEach((o) => {
-      const on = o.dataset.theme === theme;
-      o.classList.toggle('selected', on);
-      o.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-  }
-  function openThemeMenu() {
-    themeMenu.hidden = false;
-    themePicker.classList.add('open');
-    themeTrigger.setAttribute('aria-expanded', 'true');
-  }
-  function closeThemeMenu() {
-    themeMenu.hidden = true;
-    themePicker.classList.remove('open');
-    themeTrigger.setAttribute('aria-expanded', 'false');
-  }
-  themeTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    themeMenu.hidden ? openThemeMenu() : closeThemeMenu();
-  });
-  themeOptions.forEach((o) => {
-    o.addEventListener('click', () => {
-      theme = o.dataset.theme;
-      localStorage.setItem('mdtopdf-theme', theme);
+      function reflectTheme() {
+        const opt =
+          themeOptions.find((o) => o.dataset.theme === theme) ||
+          themeOptions[0];
+        themeCurrent.textContent = opt.dataset.label;
+        themeOptions.forEach((o) => {
+          const on = o.dataset.theme === theme;
+          o.classList.toggle("selected", on);
+          o.setAttribute("aria-selected", on ? "true" : "false");
+        });
+      }
+      function openThemeMenu() {
+        themeMenu.hidden = false;
+        themePicker.classList.add("open");
+        themeTrigger.setAttribute("aria-expanded", "true");
+      }
+      function closeThemeMenu() {
+        themeMenu.hidden = true;
+        themePicker.classList.remove("open");
+        themeTrigger.setAttribute("aria-expanded", "false");
+      }
+      themeTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        themeMenu.hidden ? openThemeMenu() : closeThemeMenu();
+      });
+      themeOptions.forEach((o) => {
+        o.addEventListener("click", () => {
+          theme = o.dataset.theme;
+          localStorage.setItem("mdtopdf-theme", theme);
+          reflectTheme();
+          closeThemeMenu();
+          renderPreview();
+        });
+      });
+      document.addEventListener("click", (e) => {
+        if (!themePicker.contains(e.target)) closeThemeMenu();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !themeMenu.hidden) closeThemeMenu();
+      });
       reflectTheme();
-      closeThemeMenu();
-      renderPdf();
-    });
-  });
-  document.addEventListener('click', (e) => {
-    if (!themePicker.contains(e.target)) closeThemeMenu();
-  });
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !themeMenu.hidden) closeThemeMenu();
-  });
-  reflectTheme();
 
-  const SIZE_MIN = 9, SIZE_MAX = 22;
-  let fontSize = parseInt(localStorage.getItem('mdtopdf-size'), 10);
-  if (!fontSize || fontSize < SIZE_MIN || fontSize > SIZE_MAX) fontSize = 13;
-  function applySize() {
-    sizeVal.textContent = fontSize;
-    sizeDown.disabled = fontSize <= SIZE_MIN;
-    sizeUp.disabled = fontSize >= SIZE_MAX;
-    localStorage.setItem('mdtopdf-size', fontSize);
-  }
-  function changeSize(d) {
-    const n = Math.min(SIZE_MAX, Math.max(SIZE_MIN, fontSize + d));
-    if (n === fontSize) return;
-    fontSize = n; applySize(); renderPdf();
-  }
-  sizeUp.addEventListener('click', () => changeSize(1));
-  sizeDown.addEventListener('click', () => changeSize(-1));
+      const SIZE_MIN = 9,
+        SIZE_MAX = 22;
+      let fontSize = parseInt(localStorage.getItem("mdtopdf-size"), 10);
+      if (!fontSize || fontSize < SIZE_MIN || fontSize > SIZE_MAX)
+        fontSize = 14;
+      function applySize() {
+        sizeVal.textContent = fontSize;
+        sizeDown.disabled = fontSize <= SIZE_MIN;
+        sizeUp.disabled = fontSize >= SIZE_MAX;
+        localStorage.setItem("mdtopdf-size", fontSize);
+      }
+      function changeSize(d) {
+        const n = Math.min(SIZE_MAX, Math.max(SIZE_MIN, fontSize + d));
+        if (n === fontSize) return;
+        fontSize = n;
+        applySize();
+        renderPreview();
+      }
+      sizeUp.addEventListener("click", () => changeSize(1));
+      sizeDown.addEventListener("click", () => changeSize(-1));
 
-  const sample = `# Markdown to PDF
+      const sample = `# Maximum Likelihood: Simple Linear Regression
 
-Write markdown on the left — your PDF pages appear on the right. Use the **−** / **+** controls to adjust the output text size.
+A short worked example — the same document exercises **math**, **code**, and
+**tables**, all describing one estimator.
 
-## Math
+## The idea
 
-Inline equations like $E = mc^2$ and $e^{i\\pi} + 1 = 0$ sit naturally in text.
+Assume $y_i = \\beta_0 + \\beta_1 x_i + \\varepsilon_i$ with
+$\\varepsilon_i \\sim \\mathcal{N}(0, \\sigma^2)$ i.i.d. The likelihood of
+the data is:
 
-Display equations get their own line:
+$$L(\\beta_0, \\beta_1, \\sigma^2) = \\prod_{i=1}^n \\frac{1}{\\sqrt{2\\pi\\sigma^2}} \\exp\\left(-\\frac{(y_i - \\beta_0 - \\beta_1 x_i)^2}{2\\sigma^2}\\right)$$
 
-$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+Taking logs turns the product into a sum:
 
-$$\\int_0^\\infty e^{-x^2}\\,dx = \\frac{\\sqrt{\\pi}}{2}$$
+$$\\ell(\\beta_0, \\beta_1, \\sigma^2) = -\\frac{n}{2}\\log(2\\pi\\sigma^2) - \\frac{1}{2\\sigma^2}\\sum_{i=1}^n (y_i - \\beta_0 - \\beta_1 x_i)^2$$
 
-Matrices and cases work too:
+Maximizing $\\ell$ over $\\beta_0, \\beta_1$ is the same as minimizing the
+sum of squared residuals — the MLE estimates coincide with ordinary least
+squares:
 
-$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} \\qquad f(x) = \\begin{cases} x^2 & x \\ge 0 \\\\ -x & x < 0 \\end{cases}$$
+$$\\hat\\beta_1 = \\frac{\\sum_i (x_i - \\bar x)(y_i - \\bar y)}{\\sum_i (x_i - \\bar x)^2}, \\qquad \\hat\\beta_0 = \\bar y - \\hat\\beta_1 \\bar x$$
 
-## Code
+## The code
 
 \`\`\`python
-def quadratic(a, b, c):
-    d = b**2 - 4*a*c
-    return (-b + d**0.5) / (2*a)
+import numpy as np
+
+def mle_linear_regression(x, y):
+    x_bar, y_bar = x.mean(), y.mean()
+    beta1 = np.sum((x - x_bar) * (y - y_bar)) / np.sum((x - x_bar) ** 2)
+    beta0 = y_bar - beta1 * x_bar
+    resid = y - (beta0 + beta1 * x)
+    sigma2 = np.sum(resid ** 2) / len(x)   # MLE variance (biased, /n not /(n-2))
+    return beta0, beta1, sigma2
 \`\`\`
 
-## Tables
+## Convergence
 
-| Symbol | Meaning |
-| ------ | ------- |
-| $\\nabla$ | Gradient |
-| $\\partial$ | Partial derivative |
-| $\\infty$ | Infinity |
+As sample size grows, the MLE estimates concentrate around the true
+parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
 
-> Dollar signs in prose like $5 or $10 stay literal — they're not mistaken for math.
+| $n$    | $\\hat\\beta_0$ | $\\hat\\beta_1$ | $\\hat\\sigma^2$ |
+| ------ | ---------------- | ---------------- | ------------------ |
+| 10     | 2.41             | 2.78             | 0.92               |
+| 100    | 2.07             | 2.95             | 1.01               |
+| 1,000  | 1.99             | 3.01             | 0.99               |
+| 10,000 | 2.00             | 3.00             | 1.00               |
+
+> The MLE is consistent: as $n \\to \\infty$, $\\hat\\beta_0 \\to \\beta_0$
+> and $\\hat\\beta_1 \\to \\beta_1$. Prices in prose like $5 or $10 stay
+> literal — they are not mistaken for math.
 `;
-  editor.value = sample;
+      editor.value = sample;
 
-  let statusTimer = null;
-  function setStatus(t, k) { clearTimeout(statusTimer); statusEl.textContent = t; statusEl.className = 'status' + (k ? ' ' + k : ''); }
-  function flashStatus(t, k) { setStatus(t, k); statusTimer = setTimeout(() => setStatus('Ready'), 1800); }
-  function showEmpty(msg) {
-    if (msg) { emptyMsg.textContent = msg; emptyMsg.classList.add('show'); }
-    else { emptyMsg.classList.remove('show'); }
-  }
+      let statusTimer = null;
+      function setStatus(t, k) {
+        clearTimeout(statusTimer);
+        statusEl.textContent = t;
+        statusEl.className = "status" + (k ? " " + k : "");
+      }
+      function flashStatus(t, k) {
+        setStatus(t, k);
+        statusTimer = setTimeout(() => setStatus("Ready"), 1800);
+      }
+      function fillEmpty(root, msg) {
+        const [title, ...rest] = msg.split(" — ");
+        root.querySelector(".empty-title").textContent = title;
+        root.querySelector(".empty-sub").textContent = rest.join(" — ");
+      }
+      function showEmpty(msg) {
+        if (msg) {
+          fillEmpty(emptyMsg, msg);
+          emptyMsg.classList.add("show");
+        } else {
+          emptyMsg.classList.remove("show");
+        }
+      }
 
-  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function inlineHi(s) {
-    const codes = [];
-    s = s.replace(/(`+)([^`]*?)\1/g, (m) => { codes.push(m); return '\u0000C' + (codes.length-1) + '\u0000'; });
-    s = s.replace(/(\$\$[^$]+\$\$|\$[^$\n]+\$)/g, '<span class="tok-math">$1</span>');
-    s = s.replace(/(\*\*|__)(.+?)\1/g, '<span class="tok-strong">$1$2$1</span>');
-    s = s.replace(/(^|[^*_])([*_])([^*_\s][^*_]*?)\2/g, '$1<span class="tok-em">$2$3$2</span>');
-    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<span class="tok-punct">[</span><span class="tok-link">$1</span><span class="tok-punct">](</span><span class="tok-url">$2</span><span class="tok-punct">)</span>');
-    s = s.replace(/\u0000C(\d+)\u0000/g, (_, i) => '<span class="tok-code">' + codes[Number(i)] + '</span>');
-    return s;
-  }
-  function highlightMd(src) {
-    const lines = src.split('\n');
-    let inFence = false;
-    const out = lines.map((line) => {
-      const raw = esc(line);
-      if (/^\s*(```|~~~)/.test(line)) { inFence = !inFence; return '<span class="tok-fence">' + raw + '</span>'; }
-      if (inFence) return '<span class="tok-code">' + raw + '</span>';
-      if (/^\s*#{1,6}\s/.test(line)) return '<span class="tok-head">' + raw + '</span>';
-      if (/^\s*>/.test(line)) return '<span class="tok-quote">' + inlineHi(raw) + '</span>';
-      if (/^\s*([-*+]|\d+\.)\s/.test(line))
-        return raw.replace(/^(\s*)([-*+]|\d+\.)(\s)/, '$1<span class="tok-list">$2</span>$3')
-                  .replace(/(<\/span>\s)([\s\S]*)$/, (m, p1, rest) => p1 + inlineHi(rest));
-      if (/^\s*([-*_])\1{2,}\s*$/.test(line)) return '<span class="tok-hr">' + raw + '</span>';
-      return inlineHi(raw);
-    });
-    return out.join('\n') + '\n';
-  }
-  function renderHighlight() {
-    highlight.innerHTML = highlightMd(editor.value);
-    highlight.scrollTop = editor.scrollTop; highlight.scrollLeft = editor.scrollLeft;
-  }
-  editor.addEventListener('scroll', () => { highlight.scrollTop = editor.scrollTop; highlight.scrollLeft = editor.scrollLeft; });
+      function esc(s) {
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function inlineHi(s) {
+        const codes = [];
+        s = s.replace(/(`+)([^`]*?)\1/g, (m) => {
+          codes.push(m);
+          return "\u0000C" + (codes.length - 1) + "\u0000";
+        });
+        s = s.replace(
+          /(\$\$[^$]+\$\$|\$[^$\n]+\$)/g,
+          '<span class="tok-math">$1</span>',
+        );
+        s = s.replace(
+          /(\*\*|__)(.+?)\1/g,
+          '<span class="tok-strong">$1$2$1</span>',
+        );
+        s = s.replace(
+          /(^|[^*_])([*_])([^*_\s][^*_]*?)\2/g,
+          '$1<span class="tok-em">$2$3$2</span>',
+        );
+        s = s.replace(
+          /\[([^\]]+)\]\(([^)]+)\)/g,
+          '<span class="tok-punct">[</span><span class="tok-link">$1</span><span class="tok-punct">](</span><span class="tok-url">$2</span><span class="tok-punct">)</span>',
+        );
+        s = s.replace(
+          /\u0000C(\d+)\u0000/g,
+          (_, i) => '<span class="tok-code">' + codes[Number(i)] + "</span>",
+        );
+        return s;
+      }
+      function highlightMd(src) {
+        const lines = src.split("\n");
+        let inFence = false;
+        const out = lines.map((line) => {
+          const raw = esc(line);
+          if (/^\s*(```|~~~)/.test(line)) {
+            inFence = !inFence;
+            return '<span class="tok-fence">' + raw + "</span>";
+          }
+          if (inFence) return '<span class="tok-code">' + raw + "</span>";
+          if (/^\s*#{1,6}\s/.test(line))
+            return '<span class="tok-head">' + raw + "</span>";
+          if (/^\s*>/.test(line))
+            return '<span class="tok-quote">' + inlineHi(raw) + "</span>";
+          if (/^\s*([-*+]|\d+\.)\s/.test(line))
+            return raw
+              .replace(
+                /^(\s*)([-*+]|\d+\.)(\s)/,
+                '$1<span class="tok-list">$2</span>$3',
+              )
+              .replace(
+                /(<\/span>\s)([\s\S]*)$/,
+                (m, p1, rest) => p1 + inlineHi(rest),
+              );
+          if (/^\s*([-*_])\1{2,}\s*$/.test(line))
+            return '<span class="tok-hr">' + raw + "</span>";
+          return inlineHi(raw);
+        });
+        return out.join("\n") + "\n";
+      }
+      function renderHighlight() {
+        highlight.innerHTML = highlightMd(editor.value);
+        highlight.scrollTop = editor.scrollTop;
+        highlight.scrollLeft = editor.scrollLeft;
+      }
+      editor.addEventListener("scroll", () => {
+        highlight.scrollTop = editor.scrollTop;
+        highlight.scrollLeft = editor.scrollLeft;
+      });
 
-  let lastBlob = null, pdfDirty = true;
-  let busy = false, again = false, previewTimer = null;
-  let renderedKey = null;
-  const keyOf = () => fontSize + '\n' + theme + '\n' + editor.value;
+      let lastBlob = null,
+        pdfDirty = true;
+      let renderedContinuousKey = null;
+      let busy = false,
+        again = false,
+        previewTimer = null;
+      let renderedKey = null;
+      const keyOf = () => fontSize + "\n" + theme + "\n" + editor.value;
 
-  async function convert() {
-    const res = await fetch('/api/convert', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ markdown: editor.value, fontSize, theme }),
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.blob();
-  }
+      const VIEW_MODES = ["pages", "continuous"];
+      let viewMode = localStorage.getItem("mdtopdf-view");
+      if (!VIEW_MODES.includes(viewMode)) viewMode = "pages";
 
-  function clearPages() {
-    proof.querySelectorAll('.page img').forEach((img) => {
-      if (img.src.startsWith('blob:')) URL.revokeObjectURL(img.src);
-    });
-    proof.querySelectorAll('.page').forEach((p) => p.remove());
-  }
+      async function convert() {
+        const res = await fetch("/api/convert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ markdown: editor.value, fontSize, theme }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.blob();
+      }
 
-  async function displayPdf(blob) {
-    const buf = await blob.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-    const scrollTop = proof.scrollTop;
-    clearPages();
+      function clearPages() {
+        proof.querySelectorAll(".page img").forEach((img) => {
+          if (img.src.startsWith("blob:")) URL.revokeObjectURL(img.src);
+        });
+        proof.querySelectorAll(".page").forEach((p) => p.remove());
+      }
 
-    const containerWidth = proof.clientWidth;
-    const targetCssWidth = containerWidth * 0.72;
-    const outputScale = window.devicePixelRatio || 1;
+      async function displayPdf(blob) {
+        const buf = await blob.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        const scrollTop = proof.scrollTop;
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const unscaledVp = page.getViewport({ scale: 1 });
-      const baseScale = targetCssWidth / unscaledVp.width;
-      const physW = Math.round(unscaledVp.width * baseScale * outputScale);
-      const physH = Math.round(unscaledVp.height * baseScale * outputScale);
-      const cssW = physW / outputScale;
-      const cssH = physH / outputScale;
+        const containerWidth = proof.clientWidth;
+        const targetCssWidth = containerWidth * 0.86;
+        const outputScale = window.devicePixelRatio || 1;
 
-      const offscreen = document.createElement('canvas');
-      offscreen.width = physW;
-      offscreen.height = physH;
+        const fragment = document.createDocumentFragment();
 
-      const exactScale = physW / unscaledVp.width;
-      const viewport = page.getViewport({ scale: exactScale });
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const unscaledVp = page.getViewport({ scale: 1 });
+          const baseScale = targetCssWidth / unscaledVp.width;
+          const physW = Math.round(unscaledVp.width * baseScale * outputScale);
+          const physH = Math.round(unscaledVp.height * baseScale * outputScale);
+          const cssW = physW / outputScale;
+          const cssH = physH / outputScale;
 
-      await page.render({
-        canvasContext: offscreen.getContext('2d', { alpha: false }),
-        viewport,
-      }).promise;
+          const offscreen = document.createElement("canvas");
+          offscreen.width = physW;
+          offscreen.height = physH;
 
-      const img = document.createElement('img');
-      img.style.width = cssW + 'px';
-      img.style.height = cssH + 'px';
-      img.style.display = 'block';
+          const exactScale = physW / unscaledVp.width;
+          const viewport = page.getViewport({ scale: exactScale });
 
-      const pageBlob = await new Promise((res) => offscreen.toBlob(res, 'image/png'));
-      img.src = URL.createObjectURL(pageBlob);
+          await page.render({
+            canvasContext: offscreen.getContext("2d", { alpha: false }),
+            viewport,
+          }).promise;
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'page';
-      wrapper.appendChild(img);
-      proof.insertBefore(wrapper, emptyMsg);
-    }
-    proof.scrollTop = scrollTop;
-  }
+          const img = document.createElement("img");
+          img.style.width = cssW + "px";
+          img.style.height = cssH + "px";
+          img.style.display = "block";
+          img.addEventListener("load", () => img.classList.add("loaded"), {
+            once: true,
+          });
 
-  let resizeTimer = null, lastWidth = 0, lastRenderDpr = 0;
-  function onViewChange() {
-    if (!lastBlob) return;
-    const w = proof.clientWidth;
-    const d = window.devicePixelRatio || 1;
-    if (w === lastWidth && d === lastRenderDpr) return;
-    lastWidth = w; lastRenderDpr = d;
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => displayPdf(lastBlob), 250);
-  }
-  window.addEventListener('resize', onViewChange);
-  (function watchDpr() {
-    const mq = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
-    mq.addEventListener('change', function once() {
-      mq.removeEventListener('change', once);
-      onViewChange();
-      watchDpr();
-    });
-  })();
+          const pageBlob = await new Promise((res) =>
+            offscreen.toBlob(res, "image/png"),
+          );
+          img.src = URL.createObjectURL(pageBlob);
 
-  async function renderPdf() {
-    if (!editor.value.trim()) {
-      lastBlob = null; pdfDirty = false; renderedKey = null;
-      clearPages();
-      showEmpty('Empty document — start typing');
-      setStatus('Ready');
-      return;
-    }
-    if (keyOf() === renderedKey) { setStatus('Ready'); return; }
-    if (busy) { again = true; return; }
-    busy = true; setStatus('Rendering…', 'busy');
-    try {
-      const blob = await convert();
-      lastBlob = blob; pdfDirty = false; renderedKey = keyOf();
-      showEmpty(null);
-      await displayPdf(blob);
-      setStatus('Ready');
-    } catch (err) {
-      clearPages();
-      lastBlob = null; pdfDirty = true; renderedKey = null;
-      showEmpty('Preview unavailable — ' + (err.message || 'conversion failed'));
-      setStatus('Conversion failed', 'error');
-      console.error(err);
-    } finally {
-      busy = false;
-      if (again) { again = false; renderPdf(); }
-    }
-  }
-  function schedulePdf() { pdfDirty = true; clearTimeout(previewTimer); previewTimer = setTimeout(renderPdf, 300); }
+          const wrapper = document.createElement("div");
+          wrapper.className = "page";
+          wrapper.appendChild(img);
+          fragment.appendChild(wrapper);
+        }
 
-  editor.addEventListener('input', () => { renderHighlight(); schedulePdf(); });
+        clearPages();
+        proof.insertBefore(fragment, emptyMsg);
+        proof.scrollTop = scrollTop;
+      }
 
-  function outName() {
-    let n = (filename.value || 'document').trim().replace(/[\/\\:*?"<>|]+/g, '').replace(/\.pdf$/i, '');
-    return (n || 'document') + '.pdf';
-  }
-  function save(blob) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = outName();
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
-  }
-  async function download() {
-    if (!editor.value.trim()) { flashStatus('Nothing to download'); return; }
-    downloadBtn.disabled = true;
-    try {
-      let blob = lastBlob;
-      if (pdfDirty || !blob) { setStatus('Preparing PDF…', 'busy'); blob = await convert(); lastBlob = blob; pdfDirty = false; }
-      save(blob);
-      flashStatus('Saved ' + outName());
-    } catch (err) { setStatus('Conversion failed', 'error'); console.error(err); }
-    finally { downloadBtn.disabled = false; }
-  }
-  downloadBtn.addEventListener('click', download);
-  window.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); download(); }
-  });
+      let resizeTimer = null,
+        lastWidth = 0,
+        lastRenderDpr = 0;
+      function onViewChange() {
+        if (!lastBlob || proof.hidden) return;
+        const w = proof.clientWidth;
+        if (!w) return;
+        const d = window.devicePixelRatio || 1;
+        if (w === lastWidth && d === lastRenderDpr) return;
+        lastWidth = w;
+        lastRenderDpr = d;
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => displayPdf(lastBlob), 250);
+      }
+      window.addEventListener("resize", onViewChange);
+      (function watchDpr() {
+        const mq = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+        mq.addEventListener("change", function once() {
+          mq.removeEventListener("change", once);
+          onViewChange();
+          watchDpr();
+        });
+      })();
 
-  let dragDepth = 0;
-  editorWrap.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; editorWrap.classList.add('dragging'); });
-  editorWrap.addEventListener('dragover', (e) => e.preventDefault());
-  editorWrap.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; editorWrap.classList.remove('dragging'); } });
-  editorWrap.addEventListener('drop', (e) => {
-    e.preventDefault(); dragDepth = 0; editorWrap.classList.remove('dragging');
-    const file = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      editor.value = reader.result;
-      const base = file.name.replace(/\.(md|markdown|txt)$/i, '');
-      if (base) filename.value = base;
-      renderHighlight(); renderPdf(); flashStatus('Opened ' + file.name);
-    };
-    reader.readAsText(file);
-  });
+      async function renderPdf() {
+        if (!editor.value.trim()) {
+          lastBlob = null;
+          pdfDirty = false;
+          renderedKey = null;
+          clearPages();
+          showEmpty("Empty document — start typing");
+          setStatus("Ready");
+          return;
+        }
+        if (keyOf() === renderedKey) {
+          setStatus("Ready");
+          return;
+        }
+        if (busy) {
+          again = true;
+          return;
+        }
+        busy = true;
+        setStatus("Rendering…", "busy");
+        try {
+          const blob = await convert();
+          lastBlob = blob;
+          pdfDirty = false;
+          renderedKey = keyOf();
+          showEmpty(null);
+          await displayPdf(blob);
+          setStatus("Ready");
+        } catch (err) {
+          clearPages();
+          lastBlob = null;
+          pdfDirty = true;
+          renderedKey = null;
+          showEmpty(
+            "Preview unavailable — " + (err.message || "conversion failed"),
+          );
+          setStatus("Conversion failed", "error");
+          console.error(err);
+        } finally {
+          busy = false;
+          if (again) {
+            again = false;
+            renderPreview();
+          }
+        }
+      }
 
-  applySize();
-  renderHighlight();
-  renderPdf();
+      const CONTINUOUS_STYLE = `<style>
+    body { padding: 40px 4px; }
+    .markdown-body { max-width: 760px; margin: 0 auto; }
+  </style>`;
 
-  (function () {
-    const g = document.getElementById('guide');
-    const btn = document.getElementById('guideDismiss');
-    g.classList.add('show');
-    function close() {
-      g.classList.add('fade');
-      setTimeout(() => g.classList.remove('show', 'fade'), 250);
-    }
-    btn.addEventListener('click', close);
-    g.addEventListener('mousedown', (e) => { if (e.target === g) close(); });
-    window.addEventListener('keydown', function onKey(e) {
-      if (e.key === 'Escape') { close(); window.removeEventListener('keydown', onKey); }
-    });
-  })();
-</script>
-</body>
+      async function fetchPreviewHtml() {
+        const res = await fetch("/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ markdown: editor.value, fontSize, theme }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.text();
+      }
+
+      function showContinuousEmpty(msg) {
+        if (msg) {
+          fillEmpty(emptyContinuous, msg);
+          emptyContinuous.classList.add("show");
+        } else {
+          emptyContinuous.classList.remove("show");
+        }
+      }
+
+      function captureContinuousAnchor(win) {
+        if (!win) return null;
+        let els;
+        try {
+          els = win.document.querySelectorAll("[data-source-line]");
+        } catch (_) {
+          return null;
+        }
+        let best = null,
+          bestTop = 0;
+        for (const el of els) {
+          const top = el.getBoundingClientRect().top;
+          if (top <= 1) {
+            best = el;
+            bestTop = top;
+          } else break;
+        }
+        return best
+          ? { line: best.getAttribute("data-source-line"), top: bestTop }
+          : null;
+      }
+      function restoreContinuousAnchor(win, anchor) {
+        if (!anchor || !win) return;
+        const el = win.document.querySelector(
+          `[data-source-line="${anchor.line}"]`,
+        );
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const docTop = rect.top + win.scrollY;
+        win.scrollTo(0, docTop - anchor.top);
+      }
+      function watchAnchorSettle(win, anchor) {
+        if (!win || !win.document || !win.document.body) return;
+        let raf = null;
+        const observer = new MutationObserver(() => {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() =>
+            restoreContinuousAnchor(win, anchor),
+          );
+        });
+        observer.observe(win.document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+        });
+        setTimeout(() => {
+          cancelAnimationFrame(raf);
+          observer.disconnect();
+        }, 3000);
+      }
+
+      function loadIntoFrame(frame, html) {
+        return new Promise((resolve) => {
+          frame.addEventListener("load", function onLoad() {
+            frame.removeEventListener("load", onLoad);
+            resolve();
+          });
+          frame.srcdoc = html;
+        });
+      }
+
+      async function renderContinuous() {
+        if (!editor.value.trim()) {
+          renderedContinuousKey = null;
+          activeFrame.removeAttribute("srcdoc");
+          bufferFrame.removeAttribute("srcdoc");
+          showContinuousEmpty("Empty document — start typing");
+          setStatus("Ready");
+          return;
+        }
+        if (keyOf() === renderedContinuousKey) {
+          setStatus("Ready");
+          return;
+        }
+        if (busy) {
+          again = true;
+          return;
+        }
+        busy = true;
+        setStatus("Rendering…", "busy");
+        try {
+          let html = await fetchPreviewHtml();
+          html = html.replace("</head>", CONTINUOUS_STYLE + "</head>");
+          renderedContinuousKey = keyOf();
+          showContinuousEmpty(null);
+
+          const anchor = captureContinuousAnchor(activeFrame.contentWindow);
+          const target = bufferFrame;
+          await loadIntoFrame(target, html);
+          restoreContinuousAnchor(target.contentWindow, anchor);
+
+          activeFrame.classList.remove("active");
+          target.classList.add("active");
+          bufferFrame = activeFrame;
+          activeFrame = target;
+
+          watchAnchorSettle(activeFrame.contentWindow, anchor);
+          setStatus("Ready");
+        } catch (err) {
+          bufferFrame.removeAttribute("srcdoc");
+          renderedContinuousKey = null;
+          showContinuousEmpty(
+            "Preview unavailable — " + (err.message || "conversion failed"),
+          );
+          setStatus("Conversion failed", "error");
+          console.error(err);
+        } finally {
+          busy = false;
+          if (again) {
+            again = false;
+            renderPreview();
+          }
+        }
+      }
+
+      function renderPreview() {
+        if (viewMode === "continuous") renderContinuous();
+        else renderPdf();
+      }
+      function schedulePreview() {
+        pdfDirty = true;
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(renderPreview, 300);
+      }
+
+      function setViewMode(mode) {
+        viewMode = mode;
+        localStorage.setItem("mdtopdf-view", mode);
+        viewPagesBtn.classList.toggle("active", mode === "pages");
+        viewContinuousBtn.classList.toggle("active", mode === "continuous");
+        viewPagesBtn.setAttribute("aria-pressed", String(mode === "pages"));
+        viewContinuousBtn.setAttribute(
+          "aria-pressed",
+          String(mode === "continuous"),
+        );
+        proof.hidden = mode !== "pages";
+        proofContinuous.hidden = mode !== "continuous";
+        if (mode === "pages") onViewChange();
+        renderPreview();
+      }
+      viewPagesBtn.addEventListener("click", () => {
+        if (viewMode !== "pages") setViewMode("pages");
+      });
+      viewContinuousBtn.addEventListener("click", () => {
+        if (viewMode !== "continuous") setViewMode("continuous");
+      });
+
+      editor.addEventListener("input", () => {
+        renderHighlight();
+        schedulePreview();
+      });
+
+      function outName() {
+        let n = (filename.value || "document")
+          .trim()
+          .replace(/[\/\\:*?"<>|]+/g, "")
+          .replace(/\.pdf$/i, "");
+        return (n || "document") + ".pdf";
+      }
+      function save(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = outName();
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+      async function download() {
+        if (!editor.value.trim()) {
+          flashStatus("Nothing to download");
+          return;
+        }
+        downloadBtn.disabled = true;
+        try {
+          let blob = lastBlob;
+          if (pdfDirty || !blob) {
+            setStatus("Preparing PDF…", "busy");
+            blob = await convert();
+            lastBlob = blob;
+            pdfDirty = false;
+          }
+          save(blob);
+          flashStatus("Saved " + outName());
+        } catch (err) {
+          setStatus("Conversion failed", "error");
+          console.error(err);
+        } finally {
+          downloadBtn.disabled = false;
+        }
+      }
+      downloadBtn.addEventListener("click", download);
+      window.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          download();
+        }
+      });
+
+      applySize();
+      renderHighlight();
+      setViewMode(viewMode);
+
+      (function () {
+        const g = document.getElementById("guide");
+        const btn = document.getElementById("guideDismiss");
+        g.classList.add("show");
+        function close() {
+          g.classList.add("fade");
+          setTimeout(() => g.classList.remove("show", "fade"), 250);
+        }
+        btn.addEventListener("click", close);
+        g.addEventListener("mousedown", (e) => {
+          if (e.target === g) close();
+        });
+        window.addEventListener("keydown", function onKey(e) {
+          if (e.key === "Escape") {
+            close();
+            window.removeEventListener("keydown", onKey);
+          }
+        });
+      })();
+    </script>
+  </body>
 </html>
+
