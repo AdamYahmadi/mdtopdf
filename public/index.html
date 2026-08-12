@@ -1397,7 +1397,7 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
 
       const VIEW_MODES = ["pages", "continuous"];
       let viewMode = localStorage.getItem("mdtopdf-view");
-      if (!VIEW_MODES.includes(viewMode)) viewMode = "pages";
+      if (!VIEW_MODES.includes(viewMode)) viewMode = "continuous";
 
       async function convert() {
         const res = await fetch("/api/convert", {
@@ -1530,7 +1530,7 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
           pdfDirty = true;
           renderedKey = null;
           showEmpty(
-            "Preview unavailable — " + (err.message || "conversion failed"),
+            "Couldn't generate PDF preview — try again, or simplify the document if it has large diagrams",
           );
           setStatus("Conversion failed", "error");
           console.error(err);
@@ -1662,6 +1662,10 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
           target.classList.add("active");
           bufferFrame = activeFrame;
           activeFrame = target;
+
+          target.style.display = "none";
+          void target.offsetHeight;
+          target.style.display = "";
 
           watchAnchorSettle(activeFrame.contentWindow, anchor);
           setStatus("Ready");
