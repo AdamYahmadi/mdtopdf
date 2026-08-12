@@ -1,12 +1,11 @@
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
-const { marked } = require('marked');
-const markedKatex = require('marked-katex-extension');
-const { markedHighlight } = require('marked-highlight');
-const hljs = require('highlight.js');
-
+const fs = require("fs");
+const path = require("path");
+const { marked } = require("marked");
+const markedKatex = require("marked-katex-extension");
+const { markedHighlight } = require("marked-highlight");
+const hljs = require("highlight.js");
 
 function preprocessMath(src) {
   const stash = [];
@@ -20,28 +19,47 @@ function preprocessMath(src) {
     .replace(/(`+)[^`]*?\1/g, mask);
 
   out = out
-    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`) 
-    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`);  
+    .replace(/\\\[([\s\S]+?)\\\]/g, (_, body) => `$$${body}$$`)
+    .replace(/\\\(([\s\S]+?)\\\)/g, (_, body) => `$${body}$`);
 
   out = out.replace(/\$\$([\s\S]*?)\$\$/g, (m, body) =>
-    body.includes('\n') ? `$$\n${body.trim()}\n$$` : m
+    body.includes("\n") ? `$$\n${body.trim()}\n$$` : m,
   );
 
   out = out.replace(/\u0000MATHMASK(\d+)\u0000/g, (_, i) => stash[Number(i)]);
   return out;
 }
 
-
-const KATEX_DIST = path.join(__dirname, 'node_modules', 'katex', 'dist');
+const KATEX_DIST = path.join(__dirname, "node_modules", "katex", "dist");
 
 const THEMES = {
-  light:      { file: 'atom-one-light.css',           bg: '#fafafa', border: '#e6e8eb', dark: false },
-  github:     { file: 'github.css',                   bg: '#f6f8fa', border: '#e6e8eb', dark: false },
-  'github-dark':     { file: 'github-dark.css',       bg: '#0d1117', border: '#30363d', dark: true },
-  'one-dark':        { file: 'atom-one-dark.css',     bg: '#282c34', border: '#3a3f4b', dark: true },
-  'tokyo-night':     { file: 'tokyo-night-dark.css',  bg: '#1a1b26', border: '#2a2e42', dark: true },
+  light: {
+    file: "atom-one-light.css",
+    bg: "#fafafa",
+    border: "#e6e8eb",
+    dark: false,
+  },
+  github: { file: "github.css", bg: "#f6f8fa", border: "#e6e8eb", dark: false },
+  "github-dark": {
+    file: "github-dark.css",
+    bg: "#0d1117",
+    border: "#30363d",
+    dark: true,
+  },
+  "one-dark": {
+    file: "atom-one-dark.css",
+    bg: "#282c34",
+    border: "#3a3f4b",
+    dark: true,
+  },
+  "tokyo-night": {
+    file: "tokyo-night-dark.css",
+    bg: "#1a1b26",
+    border: "#2a2e42",
+    dark: true,
+  },
 };
-const DEFAULT_THEME = 'light';
+const DEFAULT_THEME = "light";
 
 function resolveTheme(name) {
   return THEMES[name] || THEMES[DEFAULT_THEME];
@@ -52,7 +70,8 @@ function loadHljsCss(themeName) {
   const theme = resolveTheme(themeName);
   if (hljsCssCache[theme.file]) return hljsCssCache[theme.file];
   const css = fs.readFileSync(
-    path.join(__dirname, 'node_modules', 'highlight.js', 'styles', theme.file), 'utf8'
+    path.join(__dirname, "node_modules", "highlight.js", "styles", theme.file),
+    "utf8",
   );
   hljsCssCache[theme.file] = css;
   return css;
@@ -68,16 +87,16 @@ let cachedKatexCss = null;
 function loadKatexCss() {
   if (cachedKatexCss) return cachedKatexCss;
 
-  let css = fs.readFileSync(path.join(KATEX_DIST, 'katex.min.css'), 'utf8');
+  let css = fs.readFileSync(path.join(KATEX_DIST, "katex.min.css"), "utf8");
 
   css = css.replace(/url\(fonts\/([^)]+\.woff2)\)/g, (match, file) => {
-    const fontPath = path.join(KATEX_DIST, 'fonts', file);
-    const b64 = fs.readFileSync(fontPath).toString('base64');
+    const fontPath = path.join(KATEX_DIST, "fonts", file);
+    const b64 = fs.readFileSync(fontPath).toString("base64");
     return `url(data:font/woff2;base64,${b64})`;
   });
 
-  css = css.replace(/,url\(fonts\/[^)]+\.woff\) format\("woff"\)/g, '');
-  css = css.replace(/,url\(fonts\/[^)]+\.ttf\) format\("truetype"\)/g, '');
+  css = css.replace(/,url\(fonts\/[^)]+\.woff\) format\("woff"\)/g, "");
+  css = css.replace(/,url\(fonts\/[^)]+\.ttf\) format\("truetype"\)/g, "");
 
   cachedKatexCss = css;
   return css;
@@ -152,16 +171,20 @@ const GITHUB_CSS = `
 .markdown-body .katex { font-size: 1.1em; }
 `;
 
-
 let markedConfigured = false;
 function configureMarked() {
   if (markedConfigured) return;
   marked.use({
     walkTokens(token) {
-      if (token.type === 'code' && (token.lang || '').trim().split(/\s+/)[0] === 'mermaid') {
-        let src = token.raw.replace(/^[^\n]*\n/, '').replace(/\n[`~]{3,}\s*$/, '');
-        src = src.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-        token.type = 'html';
+      if (
+        token.type === "code" &&
+        (token.lang || "").trim().split(/\s+/)[0] === "mermaid"
+      ) {
+        let src = token.raw
+          .replace(/^[^\n]*\n/, "")
+          .replace(/\n[`~]{3,}\s*$/, "");
+        src = src.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+        token.type = "html";
         token.text = `<pre class="mermaid">${src}</pre>\n`;
         token.block = true;
       }
@@ -169,29 +192,28 @@ function configureMarked() {
   });
   marked.use(
     markedHighlight({
-      langPrefix: 'hljs language-',
+      langPrefix: "hljs language-",
       highlight(code, lang) {
         const language = lang && hljs.getLanguage(lang) ? lang : null;
         return language
           ? hljs.highlight(code, { language }).value
           : hljs.highlightAuto(code).value;
       },
-    })
+    }),
   );
   marked.use(
     markedKatex({
       throwOnError: false,
-    })
+    }),
   );
   marked.setOptions({ headerIds: false, mangle: false });
   markedConfigured = true;
 }
 
-
 const DEFAULT_FONT_PX = 13;
 function sizeOverrideCss(fontSize) {
   const size = Number(fontSize);
-  if (!size || size === DEFAULT_FONT_PX) return '';
+  if (!size || size === DEFAULT_FONT_PX) return "";
   const codePx = (10 * (size / DEFAULT_FONT_PX)).toFixed(2);
   return `
 .markdown-body { font-size: ${size}px; }
@@ -200,9 +222,9 @@ function sizeOverrideCss(fontSize) {
 }
 
 function mermaidAssets(bodyHtml, theme) {
-  if (!bodyHtml.includes('class="mermaid"')) return '';
+  if (!bodyHtml.includes('class="mermaid"')) return "";
   const t = resolveTheme(theme);
-  const mermaidTheme = t.dark ? 'dark' : 'default';
+  const mermaidTheme = t.dark ? "dark" : "default";
   return `
 <style>
 .markdown-body pre.mermaid {
@@ -256,8 +278,8 @@ ${mermaidAssets(bodyHtml, theme)}
 
 /**
  * @param {string} rawMd
- * @param {{fontSize?: number}} [opts] 
- * @returns {string} 
+ * @param {{fontSize?: number}} [opts]
+ * @returns {string}
  */
 function renderMarkdownToHtml(rawMd, opts = {}) {
   configureMarked();
@@ -265,31 +287,45 @@ function renderMarkdownToHtml(rawMd, opts = {}) {
   return documentShell(body, opts.fontSize, opts.theme);
 }
 
-
 function renderPreviewHtml(rawMd, opts = {}) {
   configureMarked();
   const tokens = marked.lexer(preprocessMath(rawMd));
+  if (marked.defaults.walkTokens)
+    marked.walkTokens(tokens, marked.defaults.walkTokens);
   const origLines = topLevelSourceLines(rawMd);
-  let body = '';
+  let body = "";
   let idx = 0;
   for (const tok of tokens) {
-    if (tok.type === 'space') { body += marked.parser([tok]); continue; }
+    if (tok.type === "space") {
+      body += marked.parser([tok]);
+      continue;
+    }
     const arr = [tok];
     arr.links = tokens.links || {};
     let piece = marked.parser(arr);
     const line = origLines[idx++];
     if (line != null) {
-      piece = piece.replace(/^(\s*)(<[a-zA-Z][\w-]*)/, `$1$2 data-source-line="${line}"`);
+      piece = piece.replace(
+        /^(\s*)(<[a-zA-Z][\w-]*)/,
+        `$1$2 data-source-line="${line}"`,
+      );
     }
     body += piece;
   }
   return documentShell(body, opts.fontSize, opts.theme);
 }
 
-module.exports = { renderMarkdownToHtml, renderPreviewHtml, preprocessMath, topLevelSourceLines, THEMES, DEFAULT_THEME };
+module.exports = {
+  renderMarkdownToHtml,
+  renderPreviewHtml,
+  preprocessMath,
+  topLevelSourceLines,
+  THEMES,
+  DEFAULT_THEME,
+};
 
 /**
- * @param {string} rawMd 
+ * @param {string} rawMd
  * @returns {number[]}
  */
 function topLevelSourceLines(rawMd) {
@@ -298,9 +334,10 @@ function topLevelSourceLines(rawMd) {
   const lines = [];
   let line = 1;
   for (const t of tokens) {
-    if (t.type !== 'space') lines.push(line);
-    const raw = t.raw || '';
+    if (t.type !== "space") lines.push(line);
+    const raw = t.raw || "";
     line += (raw.match(/\n/g) || []).length;
   }
   return lines;
 }
+
