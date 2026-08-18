@@ -167,7 +167,7 @@ const GITHUB_CSS = `
   padding: .2em .4em; margin: 0; font-size: 85%;
   white-space: break-spaces; background-color: #818b981f; border-radius: 6px;
 }
-.markdown-body .katex-display { margin: 16px 0; overflow-x: auto; overflow-y: visible; padding-top: 2px; }
+.markdown-body .katex-display { margin: 16px 0; overflow: visible; padding: 6px 0; }
 .markdown-body .katex { font-size: 1.1em; }
 `;
 
