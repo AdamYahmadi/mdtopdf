@@ -167,9 +167,7 @@ const GITHUB_CSS = `
   padding: .2em .4em; margin: 0; font-size: 85%;
   white-space: break-spaces; background-color: #818b981f; border-radius: 6px;
 }
-/* Display math: give block equations a little breathing room and let long
-   equations scroll horizontally rather than overflow the page. */
-.markdown-body .katex-display { margin: 16px 0; overflow-x: auto; overflow-y: hidden; }
+.markdown-body .katex-display { margin: 16px 0; overflow-x: auto; overflow-y: visible; padding-top: 2px; }
 .markdown-body .katex { font-size: 1.1em; }
 `;
 
@@ -235,7 +233,7 @@ function mermaidAssets(bodyHtml, theme) {
 }
 .markdown-body pre.mermaid svg {
   max-width: 100%;
-  max-height: 250mm;      /* keep within one A4 page (297mm minus margins) */
+  max-height: 250mm;
   width: auto; height: auto;
   display: block; margin: 0 auto;
 }
@@ -249,7 +247,6 @@ try {
 } catch (e) {
   console.error('mermaid render error', e);
 }
-// Signal to the print step that diagrams are done.
 window.__mermaidDone = true;
 document.documentElement.setAttribute('data-mermaid-ready', '1');
 </script>`;
@@ -278,11 +275,6 @@ ${mermaidAssets(bodyHtml, theme)}
 </html>`;
 }
 
-/**
- * @param {string} rawMd
- * @param {{fontSize?: number}} [opts]
- * @returns {string}
- */
 function renderMarkdownToHtml(rawMd, opts = {}) {
   configureMarked();
   const body = marked.parse(preprocessMath(rawMd));
@@ -326,10 +318,6 @@ module.exports = {
   DEFAULT_THEME,
 };
 
-/**
- * @param {string} rawMd
- * @returns {number[]}
- */
 function topLevelSourceLines(rawMd) {
   configureMarked();
   const tokens = marked.lexer(rawMd);
