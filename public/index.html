@@ -487,9 +487,7 @@
       }
 
       .theme-menu {
-        position: absolute;
-        top: calc(100% + 6px);
-        right: 0;
+        position: fixed;
         z-index: 40;
         width: 220px;
         padding: 5px;
@@ -1182,6 +1180,9 @@
         });
       }
       function openThemeMenu() {
+        const rect = themeTrigger.getBoundingClientRect();
+        themeMenu.style.top = `${rect.bottom + 6}px`;
+        themeMenu.style.right = `${window.innerWidth - rect.right}px`;
         themeMenu.hidden = false;
         themePicker.classList.add("open");
         themeTrigger.setAttribute("aria-expanded", "true");
