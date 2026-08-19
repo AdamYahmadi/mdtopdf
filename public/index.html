@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mdtopdf</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="mask-icon" href="/favicon.svg" color="#2f57d6" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="shortcut icon" href="/favicon.svg?v=2" />
+    <link rel="mask-icon" href="/favicon.svg?v=2" color="#2f57d6" />
     <style>
       :root {
         --font-ui:
@@ -677,11 +678,15 @@
       .editor pre {
         position: absolute;
         inset: 0;
-        overflow: hidden;
+        overflow: auto;
         pointer-events: none;
         color: var(--ink);
         z-index: 0;
         scrollbar-gutter: stable;
+        scrollbar-width: none;
+      }
+      .editor pre::-webkit-scrollbar {
+        display: none;
       }
       .editor textarea {
         position: absolute;
