@@ -41,7 +41,6 @@
         --t-punct: #9095a0;
         --r-sm: 4px;
         --r-md: 6px;
-        --r-lg: 8px;
       }
 
       ::selection {
@@ -50,6 +49,9 @@
 
       * {
         box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
       }
       html,
       body {
@@ -84,6 +86,11 @@
         font-size: 14.5px;
         letter-spacing: -0.03em;
         color: var(--ink);
+        cursor: pointer;
+        transition: opacity 0.12s ease;
+      }
+      .wordmark:hover {
+        opacity: 0.7;
       }
       .spacer {
         flex: 1;
@@ -91,7 +98,17 @@
       .toolbar {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
+      }
+      .toolbar-cloud-group {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        gap: 10px;
+      }
+      .toolbar-cloud-group .icon-btn {
+        width: 26px;
+        height: 26px;
       }
       .toolbar-meta {
         display: flex;
@@ -100,7 +117,7 @@
         height: 30px;
       }
       #download {
-        margin-left: 4px;
+        margin-left: 10px;
       }
       .status {
         display: inline-flex;
@@ -137,8 +154,11 @@
         align-items: baseline;
         gap: 1px;
         padding-bottom: 3px;
-        border-bottom: 1px solid var(--line);
+        border-bottom: 1px solid transparent;
         transition: border-color 0.12s ease;
+      }
+      .doc-name:hover {
+        border-bottom-color: var(--line);
       }
       .doc-name:focus-within {
         border-bottom-color: var(--accent);
@@ -146,21 +166,34 @@
       }
       .doc-name input {
         font-family: var(--font-mono);
-        font-size: 13px;
-        color: var(--ink);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--ink-soft);
         border: 0;
         background: transparent;
         outline: none;
-        width: 100px;
+        width: 150px;
+        max-width: 30vw;
         text-align: right;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
         padding: 0;
+        transition: color 0.12s ease;
+      }
+      .doc-name:hover input,
+      .doc-name:focus-within input {
+        color: var(--ink);
+      }
+      .doc-name:focus-within input {
+        text-align: left;
       }
       .doc-name input:focus-visible {
         outline: none;
       }
       .doc-name .ext {
         font-family: var(--font-mono);
-        font-size: 13px;
+        font-size: 12px;
         color: var(--muted);
       }
 
@@ -200,25 +233,25 @@
         font-size: 12.5px;
         font-weight: 500;
         letter-spacing: -0.005em;
-        border: 1px solid var(--ink);
+        border: 1px solid var(--line);
         border-radius: var(--r-md);
         cursor: pointer;
-        background: var(--ink);
-        color: #fff;
+        background: var(--paper);
+        color: var(--ink-soft);
         transition:
           background 0.15s ease,
           border-color 0.15s ease,
+          color 0.15s ease,
           transform 0.08s ease;
       }
       .btn:hover {
-        background: #000;
-        border-color: #000;
+        background: rgba(127, 127, 127, 0.08);
+        border-color: #c3c8d2;
+        color: var(--ink);
       }
       .btn:active {
-        background: #303133;
-        border-color: #303133;
         box-shadow: none;
-        transform: scale(0.97);
+        transform: scale(0.96);
       }
       .btn:disabled {
         color: var(--muted);
@@ -227,11 +260,15 @@
         border-color: var(--line);
         transform: none;
       }
-      .btn.loading:disabled,
+      .btn.loading:disabled {
+        color: var(--ink-soft);
+        background: var(--paper);
+        border-color: var(--line);
+      }
       .btn.success:disabled {
-        color: #fff;
-        background: var(--ink);
-        border-color: var(--ink);
+        color: #1f6b3c;
+        background: rgba(45, 138, 78, 0.07);
+        border-color: rgba(45, 138, 78, 0.3);
       }
       .btn:focus-visible,
       .icon-btn:focus-visible {
@@ -263,8 +300,8 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        border: 1.5px solid rgba(255, 255, 255, 0.32);
-        border-top-color: #fff;
+        border: 1.5px solid rgba(73, 81, 99, 0.25);
+        border-top-color: var(--ink-soft);
         opacity: 0;
         transition: opacity 0.15s ease;
         animation: btn-spin 0.6s linear infinite;
@@ -646,6 +683,1019 @@
         padding: 1px 5px;
       }
 
+      .app-body {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+      }
+
+      .nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 100%;
+        padding: 0;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        background: transparent;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          color 0.12s ease,
+          border-color 0.12s ease;
+      }
+      .nav-btn svg {
+        width: 11px;
+        height: 11px;
+        flex: none;
+        color: var(--muted);
+        transition:
+          transform 0.12s ease,
+          color 0.12s ease;
+      }
+      .nav-btn:hover {
+        color: var(--ink);
+      }
+      .nav-btn:hover svg {
+        color: var(--ink-soft);
+        transform: translateX(1px);
+      }
+      .nav-btn.active {
+        color: var(--ink);
+        border-bottom-color: var(--accent);
+      }
+      .nav-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+
+      .doc-title-label {
+        display: inline-flex;
+        align-items: center;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        color: var(--ink-soft);
+        max-width: 160px;
+      }
+      .doc-title-label .doc-title-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .doc-title-label .doc-title-name {
+        border-bottom: 1px dashed var(--muted);
+        padding-bottom: 2px;
+      }
+      .cloud-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 100%;
+        padding: 0;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        background: transparent;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        cursor: pointer;
+        transition:
+          opacity 0.12s ease,
+          color 0.12s ease;
+      }
+      .cloud-btn:hover {
+        color: var(--ink);
+      }
+      .cloud-btn:disabled {
+        cursor: default;
+      }
+      .cloud-btn:disabled:hover {
+        opacity: 1;
+      }
+      .cloud-btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: -2px;
+      }
+      .cloud-icon,
+      .cloud-icon-saved {
+        width: 14px;
+        height: 14px;
+        flex: none;
+        color: currentColor;
+      }
+      .cloud-icon-saved {
+        display: none;
+      }
+      .cloud-btn-spinner {
+        display: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(47, 87, 214, 0.28);
+        border-top-color: var(--accent);
+        flex: none;
+        animation: btn-spin 0.6s linear infinite;
+      }
+      .cloud-btn.saving {
+        color: var(--ink-soft);
+      }
+      .cloud-btn.saving .cloud-icon {
+        display: none;
+      }
+      .cloud-btn.saving .cloud-btn-spinner {
+        display: block;
+        border-color: rgba(127, 127, 127, 0.28);
+        border-top-color: var(--ink-soft);
+      }
+      .cloud-btn.saved {
+        color: #1f6b3c;
+        cursor: default;
+      }
+      .cloud-btn.saved .cloud-icon {
+        display: none;
+      }
+      .cloud-btn.saved .cloud-icon-saved {
+        display: block;
+      }
+      .cloud-btn.error {
+        color: #c73a3a;
+      }
+
+      .header-account {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+      .signin-link {
+        padding: 0 2px;
+        height: 28px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+      }
+      .signin-link:hover {
+        color: var(--ink);
+      }
+
+      .account-skeleton {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 28px;
+        padding: 0;
+      }
+      .account-skeleton .sk {
+        background: var(--line-soft);
+        border-radius: var(--r-sm);
+        animation: sk-pulse 1.1s ease-in-out infinite;
+      }
+      .account-skeleton .sk.avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .account-skeleton .sk.line {
+        height: 9px;
+        flex: 1;
+        max-width: 120px;
+      }
+      @keyframes sk-pulse {
+        0%,
+        100% {
+          opacity: 0.55;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .account-control {
+        position: relative;
+      }
+      .account-trigger {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 28px;
+        padding: 3px 5px 3px 3px;
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.12s ease;
+      }
+      .account-trigger:hover {
+        background: rgba(127, 127, 127, 0.1);
+      }
+      .account-trigger:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      .account-avatar {
+        flex: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-ui);
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+      }
+      .account-trigger .chevron {
+        flex: none;
+        width: 9px;
+        height: 9px;
+        color: var(--muted);
+        transition: transform 0.15s ease;
+      }
+      .account-control.open .account-trigger .chevron {
+        transform: rotate(180deg);
+      }
+      .account-control.open .account-trigger {
+        background: rgba(127, 127, 127, 0.1);
+      }
+
+      .account-menu {
+        position: fixed;
+        z-index: 60;
+        width: 200px;
+        padding: 4px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        animation: menuIn 0.12s ease;
+      }
+      .account-menu-email {
+        padding: 7px 9px 6px;
+        font-size: 11.5px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid var(--line-soft);
+        margin-bottom: 3px;
+      }
+      .account-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 7px 9px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        color: var(--ink);
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.1s ease;
+      }
+      .account-menu-item:hover {
+        background: rgba(47, 87, 214, 0.07);
+      }
+      .account-menu-item.danger {
+        color: #c73a3a;
+      }
+      .account-menu-item.danger:hover {
+        background: rgba(199, 58, 58, 0.08);
+      }
+      .account-menu-item svg {
+        width: 13px;
+        height: 13px;
+        flex: none;
+        color: var(--muted);
+      }
+      .account-menu-item.danger svg {
+        color: #c73a3a;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(16, 20, 30, 0.32);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal-overlay.fade {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease;
+      }
+
+      .auth-card {
+        position: relative;
+        width: 100%;
+        max-width: 336px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        box-shadow: 0 8px 24px rgba(16, 20, 30, 0.1);
+        padding: 30px 28px 26px;
+        animation: menuIn 0.15s ease;
+      }
+      .auth-card-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+      }
+      .auth-card-close:hover {
+        color: var(--ink);
+        background: rgba(127, 127, 127, 0.12);
+      }
+      .auth-card-close svg {
+        width: 13px;
+        height: 13px;
+      }
+      .auth-card-brand {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 12.5px;
+        letter-spacing: -0.02em;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+      .auth-head {
+        font-size: 17.5px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .auth-sub {
+        margin: 4px 0 24px;
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .auth-oauth {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .oauth-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 36px;
+        width: 100%;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        transition:
+          background 0.12s ease,
+          border-color 0.12s ease,
+          color 0.12s ease;
+      }
+      .oauth-btn:hover {
+        color: var(--ink);
+        border-color: #c3c8d2;
+        background: rgba(127, 127, 127, 0.06);
+      }
+      .oauth-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .oauth-btn svg {
+        width: 14px;
+        height: 14px;
+        flex: none;
+      }
+      .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 18px 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .auth-divider::before,
+      .auth-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+      }
+      .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .auth-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .auth-field-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+      .auth-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .auth-field input {
+        height: 38px;
+        width: 100%;
+        padding: 0 12px;
+        font-family: var(--font-ui);
+        font-size: 13.5px;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        transition:
+          border-color 0.12s ease,
+          background 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .auth-field input:hover {
+        border-color: #c3c8d2;
+      }
+      .auth-field input:focus-visible {
+        outline: none;
+        border-color: var(--accent);
+        background: var(--paper);
+        box-shadow: 0 0 0 3px rgba(47, 87, 214, 0.14);
+      }
+      .auth-link {
+        padding: 0;
+        font-family: var(--font-ui);
+        font-size: 11.5px;
+        color: var(--muted);
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+      }
+      .auth-link:hover {
+        color: var(--accent);
+      }
+      .auth-submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        margin-top: 2px;
+        font-family: var(--font-ui);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: -0.005em;
+        color: #fff;
+        background: var(--ink);
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        transition: background 0.12s ease;
+      }
+      .auth-submit:hover {
+        background: #000;
+      }
+      .auth-submit:disabled {
+        opacity: 0.65;
+        cursor: default;
+      }
+      .auth-submit .spinner {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        animation: btn-spin 0.6s linear infinite;
+      }
+      .auth-hint {
+        margin: 0;
+        padding: 9px 10px;
+        border-radius: var(--r-sm);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .auth-hint:empty {
+        display: none;
+        padding: 0;
+      }
+      .auth-hint.error {
+        color: #a4282c;
+        background: rgba(199, 58, 58, 0.08);
+      }
+      .auth-hint.success {
+        color: #1f6b3c;
+        background: rgba(45, 138, 78, 0.09);
+      }
+      .auth-toggle {
+        align-self: center;
+        margin-top: 4px;
+        padding: 0;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        color: var(--muted);
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+      }
+      .auth-toggle:hover {
+        color: var(--ink);
+      }
+
+      .confirm-card {
+        width: 100%;
+        max-width: 300px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+        padding: 20px 20px 16px;
+        animation: menuIn 0.15s ease;
+      }
+      .confirm-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 5px;
+      }
+      .confirm-body {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin-bottom: 18px;
+      }
+      .confirm-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .confirm-btn {
+        height: 30px;
+        padding: 0 12px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        font-weight: 500;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--ink-soft);
+      }
+      .confirm-btn:hover {
+        background: rgba(127, 127, 127, 0.1);
+      }
+      .confirm-btn.danger {
+        border-color: #c73a3a;
+        background: #c73a3a;
+        color: #fff;
+      }
+      .confirm-btn.danger:hover {
+        background: #a4282c;
+        border-color: #a4282c;
+      }
+      .confirm-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+
+      .documents-search-wrap {
+        flex: none;
+        width: 220px;
+      }
+      .documents-search-wrap .doc-search {
+        height: 30px;
+      }
+      .doc-search {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 27px;
+        padding: 0 8px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+      }
+      .doc-search:focus-within {
+        border-color: var(--accent);
+      }
+      .doc-search svg {
+        width: 12px;
+        height: 12px;
+        color: var(--muted);
+        flex: none;
+      }
+      .doc-search input {
+        flex: 1;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        outline: none;
+        font-family: var(--font-ui);
+        font-size: 12px;
+        color: var(--ink);
+      }
+      .doc-search input::placeholder {
+        color: var(--muted);
+      }
+
+      .documents-notice {
+        flex: none;
+        margin: 0 0 16px;
+        padding: 8px 11px;
+        border-radius: var(--r-sm);
+        font-size: 11.5px;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: #a4282c;
+        background: rgba(199, 58, 58, 0.08);
+      }
+      .documents-bulk-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 40px;
+        padding: 0 12px;
+        margin: 0 0 12px;
+        background: rgba(47, 87, 214, 0.06);
+        border: 1px solid rgba(47, 87, 214, 0.25);
+        border-radius: var(--r-md);
+        font-size: 12.5px;
+        color: var(--ink);
+      }
+      .documents-bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .documents-bulk-actions .confirm-btn {
+        height: 26px;
+        padding: 0 11px;
+        font-size: 12px;
+      }
+      .doc-notice-dismiss {
+        flex: none;
+        background: transparent;
+        border: 0;
+        color: inherit;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
+        padding: 0;
+        opacity: 0.7;
+      }
+      .doc-notice-dismiss:hover {
+        opacity: 1;
+      }
+
+      .documents-page {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        background: var(--paper);
+      }
+      .documents-page-inner {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 44px 32px 64px;
+      }
+      .documents-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 26px;
+      }
+      .documents-head h1 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+      }
+      .documents-head p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .documents-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .documents-table {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .documents-table-head,
+      .documents-row {
+        display: grid;
+        grid-template-columns: 20px 1fr 130px 80px 32px;
+        align-items: center;
+        gap: 12px;
+        padding: 0 6px;
+      }
+      .documents-table-head {
+        height: 32px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .documents-col-check {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .documents-col-check input {
+        width: 14px;
+        height: 14px;
+        accent-color: var(--ink-soft);
+        cursor: pointer;
+        opacity: 0.4;
+        transition: opacity 0.12s ease;
+      }
+      .documents-row:hover .documents-col-check input,
+      .documents-col-check input:checked,
+      .documents-col-check input:hover {
+        opacity: 1;
+      }
+      .documents-row {
+        position: relative;
+        height: 46px;
+        border-top: 1px solid var(--line-soft);
+        cursor: pointer;
+        transition: background 0.1s ease;
+      }
+      .documents-table-head + .documents-row {
+        border-top: 0;
+      }
+      .documents-row:hover {
+        background: rgba(127, 127, 127, 0.055);
+      }
+      .documents-name {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .documents-name-title {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--ink);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .documents-name-edit {
+        height: 24px;
+        width: 100%;
+        max-width: 320px;
+        padding: 0 6px;
+        font-family: var(--font-ui);
+        font-size: 13px;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--accent);
+        border-radius: 3px;
+        outline: none;
+      }
+      .documents-col-modified,
+      .documents-col-size {
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .documents-row-menu-wrap {
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .documents-kebab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        color: var(--muted);
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        opacity: 0.45;
+        transition:
+          opacity 0.1s ease,
+          background 0.1s ease,
+          color 0.1s ease;
+      }
+      .documents-kebab svg {
+        width: 15px;
+        height: 15px;
+        flex: none;
+      }
+      .documents-row:hover .documents-kebab,
+      .documents-row:focus-within .documents-kebab,
+      .documents-kebab.open {
+        opacity: 1;
+      }
+      .documents-kebab:hover,
+      .documents-kebab.open {
+        color: var(--ink);
+        background: rgba(127, 127, 127, 0.14);
+      }
+      .documents-row-menu {
+        position: fixed;
+        z-index: 60;
+        width: 150px;
+        padding: 4px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        animation: menuIn 0.12s ease;
+      }
+      .documents-row-menu button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 6px 8px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        color: var(--ink);
+        background: transparent;
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        text-align: left;
+      }
+      .documents-row-menu button:hover {
+        background: rgba(47, 87, 214, 0.07);
+      }
+      .documents-row-menu button.danger {
+        color: #c73a3a;
+      }
+      .documents-row-menu button.danger:hover {
+        background: rgba(199, 58, 58, 0.08);
+      }
+      .documents-row-menu button svg {
+        width: 12px;
+        height: 12px;
+        flex: none;
+        color: var(--muted);
+      }
+      .documents-row-menu button.danger svg {
+        color: #c73a3a;
+      }
+
+      .documents-skeleton-row {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--line-soft);
+        gap: 10px;
+      }
+      .documents-skeleton-row:last-child {
+        border-bottom: 0;
+      }
+      .documents-skeleton-row .sk {
+        background: var(--line-soft);
+        border-radius: 3px;
+        animation: sk-pulse 1.1s ease-in-out infinite;
+      }
+      .documents-skeleton-row .sk.title {
+        height: 10px;
+        width: 38%;
+      }
+
+      .documents-empty,
+      .documents-signedout {
+        padding: 64px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        border-top: 1px solid var(--line);
+      }
+      .documents-empty h2,
+      .documents-signedout h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .documents-empty p,
+      .documents-signedout p {
+        margin: 0 0 6px;
+        font-size: 12.5px;
+        color: var(--muted);
+        max-width: 340px;
+        line-height: 1.5;
+      }
+      .documents-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 14px;
+        font-family: var(--font-ui);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #fff;
+        background: var(--ink);
+        border: 0;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+      }
+      .documents-empty-btn:hover {
+        background: #000;
+      }
+      .documents-empty-btn svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      .save-dialog-card .auth-field {
+        margin-top: 4px;
+      }
+      .save-dialog-card #saveDialogName {
+        height: 36px;
+        width: 100%;
+        padding: 0 11px;
+        font-family: var(--font-ui);
+        font-size: 13.5px;
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        transition:
+          border-color 0.12s ease,
+          background 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .save-dialog-card #saveDialogName:focus-visible {
+        outline: none;
+        border-color: var(--accent);
+        background: var(--paper);
+        box-shadow: 0 0 0 3px rgba(47, 87, 214, 0.14);
+      }
+      .confirm-btn.primary {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: #fff;
+      }
+      .confirm-btn.primary:hover {
+        background: #000;
+        border-color: #000;
+      }
+
       .editor {
         position: relative;
         flex: 1;
@@ -656,6 +1706,10 @@
       }
       .editor:focus-within {
         box-shadow: inset 2px 0 0 0 var(--accent);
+      }
+      .editor.doc-switching {
+        opacity: 0.55;
+        transition: opacity 0.1s ease 0.08s;
       }
       .editor pre,
       .editor textarea {
@@ -906,7 +1960,23 @@
           min-height: 64vh;
         }
         .doc-name,
-        .divider {
+        .divider,
+        .doc-title-label {
+          display: none;
+        }
+        .cloud-btn-label {
+          display: none;
+        }
+        .documents-head {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .documents-table-head,
+        .documents-row {
+          grid-template-columns: 22px 1fr 90px;
+        }
+        .documents-col-size {
           display: none;
         }
       }
@@ -922,7 +1992,26 @@
   </head>
   <body>
     <header>
-      <div class="wordmark">mdtopdf</div>
+      <button
+        type="button"
+        class="icon-btn"
+        id="backToEditorBtn"
+        title="Back to editor"
+        aria-label="Back to editor"
+        hidden
+      >
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M9.5 4 5.5 8l4 4" />
+        </svg>
+      </button>
+      <div class="wordmark" id="wordmarkHome" title="mdtopdf" role="button" tabindex="0">mdtopdf</div>
       <a
         class="icon-btn"
         href="https://github.com/AdamYahmadi/mdtopdf"
@@ -984,6 +2073,36 @@
             <span class="spinner"></span>
           </span>
         </button>
+        <span class="head-divider"></span>
+        <div class="header-account">
+          <div class="account-skeleton" id="accountSkeleton">
+            <span class="sk avatar"></span>
+          </div>
+          <button type="button" class="signin-link" id="signinTrigger" hidden>
+            Sign in
+          </button>
+          <div class="account-control" id="accountControl" hidden>
+            <button
+              type="button"
+              class="account-trigger"
+              id="accountTrigger"
+              aria-haspopup="menu"
+              aria-expanded="false"
+            >
+              <span class="account-avatar" id="accountAvatar"></span>
+              <svg
+                class="chevron"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              >
+                <path d="M2.5 4 5 6.5 7.5 4" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -1013,9 +2132,308 @@
       </div>
     </div>
 
-    <main>
+    <div class="modal-overlay" id="authOverlay">
+      <div class="auth-card">
+        <button
+          type="button"
+          class="auth-card-close"
+          id="authCardClose"
+          aria-label="Close"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          >
+            <path d="M4 4l8 8M12 4l-8 8" />
+          </svg>
+        </button>
+        <div class="auth-card-brand">mdtopdf</div>
+        <div class="auth-head" id="authHead">Sign in</div>
+        <div class="auth-sub" id="authSub">
+          Save your documents to the cloud.
+        </div>
+        <div class="auth-oauth" id="authOauth">
+          <button type="button" class="oauth-btn" id="oauthGithubBtn">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+              />
+            </svg>
+            Continue with GitHub
+          </button>
+          <button type="button" class="oauth-btn" id="oauthGoogleBtn">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M15.68 8.18c0-.57-.05-1.11-.15-1.64H8v3.1h4.3a3.68 3.68 0 0 1-1.6 2.42v1.98h2.58c1.51-1.39 2.4-3.44 2.4-5.86z"
+              />
+              <path
+                fill="#34A853"
+                d="M8 16c2.16 0 3.97-.71 5.29-1.94l-2.58-1.98c-.72.48-1.64.76-2.71.76-2.08 0-3.85-1.4-4.48-3.29H.86v2.04A8 8 0 0 0 8 16z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M3.52 9.55A4.8 4.8 0 0 1 3.27 8c0-.54.09-1.06.25-1.55V4.41H.86A8 8 0 0 0 0 8c0 1.29.31 2.51.86 3.59l2.66-2.04z"
+              />
+              <path
+                fill="#EA4335"
+                d="M8 3.16c1.18 0 2.23.4 3.06 1.2l2.29-2.29C11.97.86 10.16 0 8 0A8 8 0 0 0 .86 4.41l2.66 2.04C4.15 4.56 5.92 3.16 8 3.16z"
+              />
+            </svg>
+            Continue with Google
+          </button>
+        </div>
+        <div class="auth-divider" id="authDivider"><span>or</span></div>
+        <form class="auth-form" id="accountLoginForm">
+          <div class="auth-field" id="emailField">
+            <label class="auth-label" for="accountEmail">Email</label>
+            <input
+              type="email"
+              id="accountEmail"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+          </div>
+          <div class="auth-field" id="passwordField">
+            <div class="auth-field-row">
+              <label class="auth-label" for="accountPassword">Password</label>
+              <button type="button" class="auth-link" id="accountForgotBtn">
+                Forgot password?
+              </button>
+            </div>
+            <input
+              type="password"
+              id="accountPassword"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+          </div>
+          <button type="submit" class="auth-submit" id="accountSubmitBtn">
+            Sign in
+          </button>
+          <p class="auth-hint" id="accountHint"></p>
+          <button type="button" class="auth-toggle" id="accountToggleBtn">
+            Don't have an account? Create one
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="account-menu" id="accountMenu" role="menu" hidden>
+      <div class="account-menu-email" id="accountMenuEmail"></div>
+      <button
+        type="button"
+        class="account-menu-item danger"
+        id="accountSignOut"
+        role="menuitem"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 14H3.5a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H6" />
+          <path d="M10.5 11 14 7.5 10.5 4M14 7.5H6" />
+        </svg>
+        Sign out
+      </button>
+    </div>
+
+    <div class="modal-overlay" id="confirmOverlay">
+      <div class="confirm-card">
+        <div class="confirm-title" id="confirmTitle">Delete document?</div>
+        <div class="confirm-body" id="confirmBody">
+          This action cannot be undone.
+        </div>
+        <div class="confirm-actions">
+          <button type="button" class="confirm-btn" id="confirmCancelBtn">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="confirm-btn danger"
+            id="confirmActionBtn"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="saveDialogOverlay">
+      <div class="confirm-card save-dialog-card">
+        <div class="confirm-title">Save document</div>
+        <div class="auth-field">
+          <label class="auth-label" for="saveDialogName">Document name</label>
+          <input
+            type="text"
+            id="saveDialogName"
+            placeholder="Untitled"
+            autocomplete="off"
+          />
+        </div>
+        <div class="confirm-actions" style="margin-top: 18px">
+          <button type="button" class="confirm-btn" id="saveDialogCancelBtn">
+            Cancel
+          </button>
+          <button type="button" class="confirm-btn primary" id="saveDialogConfirmBtn">
+            Save document
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="documents-page" id="documentsPage" hidden>
+      <div class="documents-page-inner">
+        <div class="documents-head">
+          <div>
+            <h1>Documents</h1>
+            <p id="documentsSubtitle">Your saved Markdown documents</p>
+          </div>
+          <div class="documents-head-actions">
+            <div class="documents-search-wrap" id="documentsSearchWrap" hidden>
+              <div class="doc-search">
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="7" cy="7" r="4.5" />
+                  <path d="M13.5 13.5 10.4 10.4" />
+                </svg>
+                <input
+                  type="text"
+                  id="documentsSearchInput"
+                  placeholder="Search documents"
+                  aria-label="Search documents"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="documents-notice" id="documentsNotice" hidden>
+          <span id="documentsNoticeText"></span>
+          <button
+            type="button"
+            class="doc-notice-dismiss"
+            id="documentsNoticeDismiss"
+            aria-label="Dismiss"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div class="documents-bulk-bar" id="documentsBulkBar" hidden>
+          <span id="documentsBulkCount">0 selected</span>
+          <div class="documents-bulk-actions">
+            <button type="button" class="confirm-btn" id="documentsBulkClearBtn">
+              Clear
+            </button>
+            <button
+              type="button"
+              class="confirm-btn danger"
+              id="documentsBulkDeleteBtn"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <div id="documentsBody"></div>
+      </div>
+    </div>
+
+    <div class="app-body">
+      <main>
       <section class="pane source">
-        <div class="pane-head"><span class="eyebrow">Source</span></div>
+        <div class="pane-head">
+          <span class="eyebrow">Source</span>
+          <span class="spacer"></span>
+          <div class="toolbar-cloud-group" id="toolbarCloudGroup">
+            <button
+              type="button"
+              class="icon-btn"
+              id="newDocBtn"
+              title="New document"
+              aria-label="New document"
+              hidden
+            >
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 2h4l3 3v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" />
+                <path d="M9 2v3h3" />
+                <path d="M8 8v4M6 10h4" />
+              </svg>
+            </button>
+            <span class="doc-title-label" id="docTitleLabel" hidden>
+              <span class="doc-title-name" id="docTitleName">Untitled</span>
+            </span>
+            <span class="head-divider" id="docTitleDivider" hidden></span>
+            <button type="button" class="cloud-btn" id="cloudBtn">
+              <svg
+                class="cloud-icon"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4.5 12.5a3 3 0 0 1-.5-5.96 3.5 3.5 0 0 1 6.79-1.29A2.75 2.75 0 0 1 11.75 10.5v.02"
+                />
+                <path d="M4.5 12.5h7.25" />
+              </svg>
+              <svg
+                class="cloud-icon-saved"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4.5 12.5a3 3 0 0 1-.5-5.96 3.5 3.5 0 0 1 6.79-1.29A2.75 2.75 0 0 1 11.75 10.5v.02"
+                />
+                <path d="M4.5 12.5h7.25" />
+                <path d="M5.7 9.1 7 10.4l2.6-2.7" />
+              </svg>
+              <span class="cloud-btn-spinner" aria-hidden="true"></span>
+              <span class="cloud-btn-label" id="cloudBtnLabel">Save to mdtopdf</span>
+            </button>
+            <span class="head-divider"></span>
+            <button type="button" class="nav-btn" id="docsNavBtn">
+              Documents
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6.5 4.5 10.5 8l-4 3.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
         <div class="editor">
           <pre id="highlight" aria-hidden="true"></pre>
           <textarea
@@ -1216,13 +2634,21 @@
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </div>
 
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
       type="module"
     ></script>
     <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      const SUPABASE_URL = "https://dsfhpaopunfectnyhkyq.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_xSYJGT8nHlwhrmegXnkIhg_xi6GSF-C";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
       const editor = document.getElementById("editor");
       const highlight = document.getElementById("highlight");
       const proof = document.getElementById("proof");
@@ -1815,6 +3241,7 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
       editor.addEventListener("input", () => {
         renderHighlight();
         schedulePreview();
+        refreshCloudState();
       });
 
       function outName() {
@@ -1894,6 +3321,1089 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
           }
         });
       })();
+
+      const wordmarkHome = document.getElementById("wordmarkHome");
+      const backToEditorBtn = document.getElementById("backToEditorBtn");
+      const toolbarCloudGroup = document.getElementById("toolbarCloudGroup");
+      const newDocBtn = document.getElementById("newDocBtn");
+      const docTitleLabel = document.getElementById("docTitleLabel");
+      const docTitleName = document.getElementById("docTitleName");
+      const docTitleDivider = document.getElementById("docTitleDivider");
+      const docsNavBtn = document.getElementById("docsNavBtn");
+      const cloudBtn = document.getElementById("cloudBtn");
+      const cloudBtnLabel = document.getElementById("cloudBtnLabel");
+      const appBody = document.querySelector(".app-body");
+      const pane = document.querySelector(".pane.source .editor");
+
+      const authOverlay = document.getElementById("authOverlay");
+      const authCardClose = document.getElementById("authCardClose");
+      const authHead = document.getElementById("authHead");
+      const authSub = document.getElementById("authSub");
+      const authOauth = document.getElementById("authOauth");
+      const authDivider = document.getElementById("authDivider");
+      const oauthGithubBtn = document.getElementById("oauthGithubBtn");
+      const oauthGoogleBtn = document.getElementById("oauthGoogleBtn");
+      const loginForm = document.getElementById("accountLoginForm");
+      const emailField = document.getElementById("emailField");
+      const emailInput = document.getElementById("accountEmail");
+      const passwordField = document.getElementById("passwordField");
+      const passwordInput = document.getElementById("accountPassword");
+      const accountForgotBtn = document.getElementById("accountForgotBtn");
+      const accountSubmitBtn = document.getElementById("accountSubmitBtn");
+      const accountToggleBtn = document.getElementById("accountToggleBtn");
+      const accountHint = document.getElementById("accountHint");
+
+      const accountSkeleton = document.getElementById("accountSkeleton");
+      const signinTrigger = document.getElementById("signinTrigger");
+      const accountControl = document.getElementById("accountControl");
+      const accountTrigger = document.getElementById("accountTrigger");
+      const accountMenu = document.getElementById("accountMenu");
+      const accountMenuEmail = document.getElementById("accountMenuEmail");
+      const accountAvatar = document.getElementById("accountAvatar");
+      const signOutBtn = document.getElementById("accountSignOut");
+
+      const confirmOverlay = document.getElementById("confirmOverlay");
+      const confirmTitle = document.getElementById("confirmTitle");
+      const confirmBody = document.getElementById("confirmBody");
+      const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+      const confirmActionBtn = document.getElementById("confirmActionBtn");
+
+      const saveDialogOverlay = document.getElementById("saveDialogOverlay");
+      const saveDialogName = document.getElementById("saveDialogName");
+      const saveDialogCancelBtn = document.getElementById("saveDialogCancelBtn");
+      const saveDialogConfirmBtn = document.getElementById("saveDialogConfirmBtn");
+
+      const documentsPage = document.getElementById("documentsPage");
+      const documentsSubtitle = document.getElementById("documentsSubtitle");
+      const documentsSearchWrap = document.getElementById("documentsSearchWrap");
+      const documentsSearchInput = document.getElementById("documentsSearchInput");
+      const documentsNotice = document.getElementById("documentsNotice");
+      const documentsNoticeText = document.getElementById("documentsNoticeText");
+      const documentsNoticeDismiss = document.getElementById("documentsNoticeDismiss");
+      const documentsBulkBar = document.getElementById("documentsBulkBar");
+      const documentsBulkCount = document.getElementById("documentsBulkCount");
+      const documentsBulkClearBtn = document.getElementById("documentsBulkClearBtn");
+      const documentsBulkDeleteBtn = document.getElementById("documentsBulkDeleteBtn");
+      const documentsBody = document.getElementById("documentsBody");
+
+      let session = null;
+      let sessionLoading = true;
+      let currentView = "editor";
+      let authMode = "signin";
+      let pendingSaveIntent = false;
+
+      let currentDocId = null;
+      let currentDocTitle = "";
+      let lastSavedSnapshot = "";
+      let cloudState = "unsaved";
+      let saveInFlight = false;
+      let docGeneration = 0;
+      let loadToken = 0;
+
+      let documents = [];
+      let documentsLoaded = false;
+      let documentsLoading = false;
+      let docSearch = "";
+      let selectedDocIds = new Set();
+      let confirmPendingAction = null;
+      let pendingNewTitle = "";
+      let closeRowMenu = () => {};
+
+      const KEBAB_ICON =
+        '<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3.4" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="8" cy="12.6" r="1.3"/></svg>';
+      const OPEN_ICON =
+        '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M2 6h6.5M5.5 3 8.5 6l-3 3"/></svg>';
+      const RENAME_ICON =
+        '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M7.5 2 10 4.5 4 10.5H1.5V8Z"/></svg>';
+      const DELETE_ICON =
+        '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" width="12" height="12"><path d="M3 3l6 6M9 3l-6 6"/></svg>';
+
+      const AUTH_MODE = {
+        signin: {
+          head: "Sign in",
+          sub: "Save your documents to the cloud.",
+          submit: "Sign in",
+          loading: "Signing in…",
+          showEmail: true,
+          showPassword: true,
+          showForgot: true,
+          showOauth: true,
+          toggle: "Don't have an account? Create one",
+          toggleTarget: "signup",
+        },
+        signup: {
+          head: "Create account",
+          sub: "Save your documents to the cloud.",
+          submit: "Create account",
+          loading: "Creating account…",
+          showEmail: true,
+          showPassword: true,
+          showForgot: false,
+          showOauth: true,
+          toggle: "Already have an account? Sign in",
+          toggleTarget: "signin",
+        },
+        reset: {
+          head: "Reset password",
+          sub: "We'll email you a link to reset your password.",
+          submit: "Send reset link",
+          loading: "Sending…",
+          showEmail: true,
+          showPassword: false,
+          showForgot: false,
+          showOauth: false,
+          toggle: "Back to sign in",
+          toggleTarget: "signin",
+        },
+        recovery: {
+          head: "Set a new password",
+          sub: "Choose a new password to finish resetting your account.",
+          submit: "Set new password",
+          loading: "Updating…",
+          showEmail: false,
+          showPassword: true,
+          showForgot: false,
+          showOauth: false,
+          toggle: null,
+          toggleTarget: null,
+        },
+      };
+
+      function applyAuthModeConfig() {
+        const cfg = AUTH_MODE[authMode];
+        authHead.textContent = cfg.head;
+        authSub.textContent = cfg.sub;
+        authOauth.hidden = !cfg.showOauth;
+        authDivider.hidden = !cfg.showOauth;
+        emailField.hidden = !cfg.showEmail;
+        emailInput.required = cfg.showEmail;
+        passwordField.hidden = !cfg.showPassword;
+        passwordInput.required = cfg.showPassword;
+        passwordInput.placeholder =
+          authMode === "recovery" ? "New password" : "••••••••";
+        accountForgotBtn.hidden = !cfg.showForgot;
+        accountSubmitBtn.textContent = cfg.submit;
+        accountToggleBtn.hidden = !cfg.toggle;
+        if (cfg.toggle) accountToggleBtn.textContent = cfg.toggle;
+        accountHint.textContent = "";
+        accountHint.className = "auth-hint";
+      }
+      function setAuthMode(mode) {
+        authMode = mode;
+        applyAuthModeConfig();
+      }
+      function setSubmitLoading(loading) {
+        const cfg = AUTH_MODE[authMode];
+        accountSubmitBtn.disabled = loading;
+        accountSubmitBtn.innerHTML = loading
+          ? '<span class="spinner"></span>' + cfg.loading
+          : cfg.submit;
+        emailInput.disabled = loading;
+        passwordInput.disabled = loading;
+      }
+
+      function mapAuthError(err) {
+        const msg = (err && err.message) || "";
+        const m = msg.toLowerCase();
+        if (m.includes("invalid login credentials"))
+          return "Incorrect email or password.";
+        if (m.includes("user already registered") || m.includes("already registered"))
+          return "An account with that email already exists.";
+        if (m.includes("email not confirmed"))
+          return "Please confirm your email before signing in.";
+        if (m.includes("password should be at least") || m.includes("at least 6"))
+          return "Password must be at least 6 characters.";
+        if (m.includes("rate limit") || m.includes("too many"))
+          return "Too many attempts. Try again in a moment.";
+        if (m.includes("failed to fetch") || m.includes("network"))
+          return "Network error — check your connection and try again.";
+        if (m.includes("valid email"))
+          return "Enter a valid email address.";
+        return "Something went wrong. Please try again.";
+      }
+
+      function mapDocError() {
+        return "Something went wrong. Check your connection and try again.";
+      }
+
+      function openAuthModal(mode) {
+        if (mode) setAuthMode(mode);
+        authOverlay.classList.add("show");
+        setTimeout(() => emailInput.focus(), 0);
+      }
+      function closeAuthModal() {
+        if (authMode === "recovery") return;
+        authOverlay.classList.remove("show");
+        pendingSaveIntent = false;
+      }
+      signinTrigger.addEventListener("click", () => openAuthModal("signin"));
+      authCardClose.addEventListener("click", closeAuthModal);
+      authOverlay.addEventListener("mousedown", (e) => {
+        if (e.target === authOverlay) closeAuthModal();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && authOverlay.classList.contains("show"))
+          closeAuthModal();
+      });
+
+      function openAccountMenu() {
+        const rect = accountTrigger.getBoundingClientRect();
+        accountMenu.style.top = `${rect.bottom + 6}px`;
+        accountMenu.style.right = `${window.innerWidth - rect.right}px`;
+        accountMenu.hidden = false;
+        accountControl.classList.add("open");
+        accountTrigger.setAttribute("aria-expanded", "true");
+      }
+      function closeAccountMenu() {
+        accountMenu.hidden = true;
+        accountControl.classList.remove("open");
+        accountTrigger.setAttribute("aria-expanded", "false");
+      }
+      accountTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        accountMenu.hidden ? openAccountMenu() : closeAccountMenu();
+      });
+      document.addEventListener("click", (e) => {
+        if (!accountControl.contains(e.target) && !accountMenu.contains(e.target))
+          closeAccountMenu();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !accountMenu.hidden) closeAccountMenu();
+      });
+
+      function syncCloudBtnDisabled() {
+        cloudBtn.disabled =
+          sessionLoading || cloudState === "saving" || cloudState === "saved";
+      }
+
+      function setDocTitle(title) {
+        currentDocTitle = title;
+        docTitleName.textContent = title || "Untitled";
+        const saved = !!currentDocId;
+        docTitleLabel.hidden = !saved;
+        docTitleDivider.hidden = !saved;
+        newDocBtn.hidden = !saved;
+      }
+
+      function renderAccountUI() {
+        accountSkeleton.hidden = !sessionLoading;
+        const signedIn = !!session && !sessionLoading;
+        signinTrigger.hidden = sessionLoading || signedIn;
+        accountControl.hidden = sessionLoading || !signedIn;
+        syncCloudBtnDisabled();
+        if (signedIn) {
+          const label = session.user.email || "";
+          accountAvatar.textContent = label[0] ? label[0].toUpperCase() : "?";
+          accountAvatar.title = label;
+          accountMenuEmail.textContent = label;
+        } else if (!sessionLoading) {
+          closeAccountMenu();
+          applyAuthModeConfig();
+        }
+        if (currentView === "documents") renderDocumentsPage();
+      }
+
+      function setCloudState(state) {
+        cloudState = state;
+        cloudBtn.className = "cloud-btn " + state;
+        syncCloudBtnDisabled();
+        cloudBtnLabel.textContent =
+          state === "saving"
+            ? "Saving…"
+            : state === "error"
+              ? "Couldn't save — Retry"
+              : state === "saved"
+                ? "Saved to Documents"
+                : "Save to mdtopdf";
+      }
+      function refreshCloudState() {
+        if (cloudState === "saving") return;
+        if (!currentDocId) setCloudState("unsaved");
+        else if (editor.value !== lastSavedSnapshot) setCloudState("dirty");
+        else setCloudState("saved");
+      }
+      function hasUnsavedWork() {
+        return (
+          cloudState === "dirty" ||
+          cloudState === "error" ||
+          (cloudState === "unsaved" && editor.value.trim() !== "")
+        );
+      }
+
+      cloudBtn.addEventListener("click", () => {
+        if (cloudState === "saving") return;
+        if (!session) {
+          pendingSaveIntent = true;
+          openAuthModal("signin");
+          return;
+        }
+        proceedSave();
+      });
+      function proceedSave() {
+        if (currentDocId) performSave(currentDocTitle);
+        else openSaveDialog();
+      }
+
+      function openSaveDialog() {
+        saveDialogName.value = currentDocTitle || pendingNewTitle || "Untitled";
+        saveDialogOverlay.classList.add("show");
+        setTimeout(() => {
+          saveDialogName.focus();
+          saveDialogName.select();
+        }, 0);
+      }
+      function closeSaveDialog() {
+        saveDialogOverlay.classList.remove("show");
+      }
+      saveDialogCancelBtn.addEventListener("click", closeSaveDialog);
+      saveDialogOverlay.addEventListener("mousedown", (e) => {
+        if (e.target === saveDialogOverlay) closeSaveDialog();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && saveDialogOverlay.classList.contains("show"))
+          closeSaveDialog();
+      });
+      saveDialogName.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          saveDialogConfirmBtn.click();
+        }
+      });
+      saveDialogConfirmBtn.addEventListener("click", () => {
+        const name = (saveDialogName.value || "").trim() || "Untitled";
+        closeSaveDialog();
+        performSave(name);
+      });
+
+      async function performSave(title) {
+        if (!session || saveInFlight) return;
+        const docIdAtStart = currentDocId;
+        const genAtStart = docGeneration;
+        const content = editor.value;
+        saveInFlight = true;
+        setCloudState("saving");
+        try {
+          let newId = null;
+          if (docIdAtStart) {
+            const { error } = await supabase
+              .from("drafts")
+              .update({
+                title,
+                content,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", docIdAtStart);
+            if (error) throw error;
+          } else {
+            const { data, error } = await supabase
+              .from("drafts")
+              .insert({ title, content, user_id: session.user.id })
+              .select("id")
+              .single();
+            if (error) throw error;
+            newId = data.id;
+          }
+          if (genAtStart === docGeneration) {
+            currentDocId = docIdAtStart || newId;
+            setDocTitle(title);
+            pendingNewTitle = "";
+            lastSavedSnapshot = content;
+            localStorage.setItem("mdtopdf-last-doc-id", currentDocId);
+            setCloudState("saved");
+          }
+          documentsLoaded = false;
+          if (currentView === "documents") loadDocumentsIfNeeded(true);
+        } catch (err) {
+          console.error(err);
+          if (genAtStart === docGeneration) {
+            if (!docIdAtStart) pendingNewTitle = title;
+            setCloudState("error");
+          }
+        } finally {
+          saveInFlight = false;
+        }
+      }
+
+      function openConfirm({ title, body, actionLabel, danger = true, onConfirm }) {
+        confirmTitle.textContent = title;
+        confirmBody.textContent = body;
+        confirmActionBtn.textContent = actionLabel;
+        confirmActionBtn.className = "confirm-btn" + (danger ? " danger" : " primary");
+        confirmPendingAction = onConfirm;
+        confirmOverlay.classList.add("show");
+      }
+      function closeConfirmModal() {
+        confirmOverlay.classList.remove("show");
+        confirmPendingAction = null;
+      }
+      confirmCancelBtn.addEventListener("click", closeConfirmModal);
+      confirmOverlay.addEventListener("mousedown", (e) => {
+        if (e.target === confirmOverlay) closeConfirmModal();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && confirmOverlay.classList.contains("show"))
+          closeConfirmModal();
+      });
+      confirmActionBtn.addEventListener("click", async () => {
+        const action = confirmPendingAction;
+        if (!action) return;
+        confirmActionBtn.disabled = true;
+        try {
+          await action();
+          closeConfirmModal();
+        } catch (_) {
+        } finally {
+          confirmActionBtn.disabled = false;
+        }
+      });
+
+      function newDocument() {
+        currentDocId = null;
+        setDocTitle("");
+        pendingNewTitle = "";
+        docGeneration++;
+        filename.value = "";
+        editor.value = "";
+        renderHighlight();
+        schedulePreview();
+        lastSavedSnapshot = "";
+        setCloudState("unsaved");
+        localStorage.removeItem("mdtopdf-last-doc-id");
+        editor.focus();
+      }
+      function triggerNewDocument() {
+        if (hasUnsavedWork()) {
+          openConfirm({
+            title: "Discard unsaved changes?",
+            body: "You have unsaved changes. Discard and create a new document?",
+            actionLabel: "Create new document",
+            onConfirm: () => {
+              newDocument();
+              showEditorView();
+            },
+          });
+        } else {
+          newDocument();
+          showEditorView();
+        }
+      }
+      newDocBtn.addEventListener("click", triggerNewDocument);
+
+      function showEditorView() {
+        currentView = "editor";
+        documentsPage.hidden = true;
+        appBody.hidden = false;
+        backToEditorBtn.hidden = true;
+        docsNavBtn.classList.remove("active");
+        closeRowMenu();
+      }
+      function showDocumentsView() {
+        currentView = "documents";
+        appBody.hidden = true;
+        documentsPage.hidden = false;
+        backToEditorBtn.hidden = false;
+        docsNavBtn.classList.add("active");
+        closeAccountMenu();
+        loadDocumentsIfNeeded(false);
+        renderDocumentsPage();
+      }
+      backToEditorBtn.addEventListener("click", () => {
+        if (currentView !== "editor") showEditorView();
+      });
+      wordmarkHome.addEventListener("click", () => {
+        if (currentView !== "editor") showEditorView();
+      });
+      wordmarkHome.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && currentView !== "editor") {
+          e.preventDefault();
+          showEditorView();
+        }
+      });
+      docsNavBtn.addEventListener("click", () => {
+        if (currentView !== "documents") showDocumentsView();
+        else loadDocumentsIfNeeded(true);
+      });
+
+      async function loadDocument(id) {
+        showEditorView();
+        if (id === currentDocId) return;
+        const token = ++loadToken;
+        docGeneration++;
+        pane.classList.add("doc-switching");
+        const { data, error } = await supabase
+          .from("drafts")
+          .select("id,title,content")
+          .eq("id", id)
+          .single();
+        if (token !== loadToken) return;
+        pane.classList.remove("doc-switching");
+        if (error) {
+          console.error(error);
+          showDocumentsNotice(mapDocError());
+          return;
+        }
+        currentDocId = data.id;
+        setDocTitle(data.title || "Untitled");
+        pendingNewTitle = "";
+        editor.value = data.content || "";
+        renderHighlight();
+        schedulePreview();
+        lastSavedSnapshot = editor.value;
+        setCloudState("saved");
+        localStorage.setItem("mdtopdf-last-doc-id", data.id);
+      }
+
+      async function restoreLastDocument() {
+        const savedId = localStorage.getItem("mdtopdf-last-doc-id");
+        if (!savedId) return;
+        const { data, error } = await supabase
+          .from("drafts")
+          .select("id,title,content")
+          .eq("id", savedId)
+          .maybeSingle();
+        if (error || !data) {
+          localStorage.removeItem("mdtopdf-last-doc-id");
+          return;
+        }
+        currentDocId = data.id;
+        setDocTitle(data.title || "Untitled");
+        pendingNewTitle = "";
+        editor.value = data.content || "";
+        renderHighlight();
+        schedulePreview();
+        lastSavedSnapshot = editor.value;
+        setCloudState("saved");
+      }
+
+      function resetEditorForSignOut() {
+        currentDocId = null;
+        setDocTitle("");
+        pendingNewTitle = "";
+        docGeneration++;
+        documents = [];
+        documentsLoaded = false;
+        selectedDocIds.clear();
+        docSearch = "";
+        documentsSearchInput.value = "";
+        filename.value = "";
+        editor.value = "";
+        renderHighlight();
+        schedulePreview();
+        lastSavedSnapshot = "";
+        setCloudState("unsaved");
+        localStorage.removeItem("mdtopdf-last-doc-id");
+        if (currentView === "documents") renderDocumentsPage();
+      }
+
+      function showDocumentsNotice(msg) {
+        documentsNoticeText.textContent = msg;
+        documentsNotice.hidden = false;
+        clearTimeout(showDocumentsNotice._t);
+        showDocumentsNotice._t = setTimeout(() => {
+          documentsNotice.hidden = true;
+        }, 5000);
+      }
+      documentsNoticeDismiss.addEventListener("click", () => {
+        documentsNotice.hidden = true;
+        clearTimeout(showDocumentsNotice._t);
+      });
+
+      async function loadDocumentsIfNeeded(force) {
+        if (!session) return;
+        if (documentsLoaded && !force) return;
+        documentsLoading = true;
+        if (currentView === "documents") renderDocumentsPage();
+        const { data, error } = await supabase
+          .from("drafts")
+          .select("id,title,content,updated_at")
+          .order("updated_at", { ascending: false });
+        documentsLoading = false;
+        if (error) {
+          console.error(error);
+          showDocumentsNotice(mapDocError());
+          if (currentView === "documents") renderDocumentsPage();
+          return;
+        }
+        documents = data || [];
+        documentsLoaded = true;
+        const liveIds = new Set(documents.map((d) => d.id));
+        selectedDocIds.forEach((id) => {
+          if (!liveIds.has(id)) selectedDocIds.delete(id);
+        });
+        if (currentView === "documents") renderDocumentsPage();
+      }
+
+      function formatModified(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso);
+        const now = new Date();
+        const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+        const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+        const time = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        if (diffDays === 0) return "Today, " + time;
+        if (diffDays === 1) return "Yesterday, " + time;
+        if (d.getFullYear() === now.getFullYear())
+          return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ", " + time;
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      }
+      function formatSize(content) {
+        const bytes = new TextEncoder().encode(content || "").length;
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB";
+        return (bytes / 1024 / 1024).toFixed(1) + " MB";
+      }
+
+      function renderDocumentsSkeleton() {
+        documentsBody.innerHTML = "";
+        const table = document.createElement("div");
+        table.className = "documents-table";
+        for (let i = 0; i < 5; i++) {
+          const row = document.createElement("div");
+          row.className = "documents-skeleton-row";
+          row.innerHTML = '<span class="sk title"></span>';
+          table.appendChild(row);
+        }
+        documentsBody.appendChild(table);
+      }
+      function renderDocumentsEmpty() {
+        documentsBody.innerHTML =
+          '<div class="documents-empty"><h2>No documents yet</h2>' +
+          "<p>Save your first Markdown document to access it from anywhere.</p></div>";
+      }
+      function renderDocumentsNoMatch() {
+        documentsBody.innerHTML =
+          '<div class="documents-empty"><h2>No matches</h2><p>No documents match “' +
+          esc(docSearch.trim()) +
+          "”.</p></div>";
+      }
+      function renderDocumentsSignedOut() {
+        documentsBody.innerHTML =
+          '<div class="documents-signedout"><h2>Your documents</h2>' +
+          "<p>Sign in to save and access your Markdown documents across sessions.</p>" +
+          '<button type="button" class="documents-empty-btn" id="documentsSignInBtn">Sign in</button></div>';
+        document
+          .getElementById("documentsSignInBtn")
+          .addEventListener("click", () => openAuthModal("signin"));
+      }
+
+      function startRowRename(doc, titleEl) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "documents-name-edit";
+        input.value = doc.title || "";
+        titleEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        let done = false;
+        async function commit() {
+          if (done) return;
+          done = true;
+          const newTitle = (input.value || "Untitled").trim() || "Untitled";
+          input.replaceWith(titleEl);
+          titleEl.textContent = newTitle;
+          if (newTitle === doc.title) return;
+          const prevTitle = doc.title;
+          doc.title = newTitle;
+          if (doc.id === currentDocId) setDocTitle(newTitle);
+          const { error } = await supabase
+            .from("drafts")
+            .update({ title: newTitle, updated_at: new Date().toISOString() })
+            .eq("id", doc.id);
+          if (error) {
+            console.error(error);
+            doc.title = prevTitle;
+            titleEl.textContent = prevTitle || "Untitled";
+            if (doc.id === currentDocId) setDocTitle(prevTitle);
+            showDocumentsNotice(mapDocError());
+          } else {
+            doc.updated_at = new Date().toISOString();
+            renderDocumentsPage();
+          }
+        }
+        input.addEventListener("click", (e) => e.stopPropagation());
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            input.blur();
+          }
+          if (e.key === "Escape") {
+            done = true;
+            input.replaceWith(titleEl);
+          }
+        });
+        input.addEventListener("blur", commit);
+      }
+
+      function requestDeleteDocument(id) {
+        openConfirm({
+          title: "Delete document?",
+          body: "This action cannot be undone.",
+          actionLabel: "Delete",
+          onConfirm: () => deleteDocument(id),
+        });
+      }
+      async function deleteDocument(id) {
+        const { data, error } = await supabase
+          .from("drafts")
+          .delete()
+          .eq("id", id)
+          .select("id");
+        if (error) {
+          console.error(error);
+          showDocumentsNotice(mapDocError());
+          throw error;
+        }
+        if (!data || !data.length) {
+          console.error("delete affected 0 rows for id " + id);
+          showDocumentsNotice("Couldn't delete — you may not have permission.");
+          throw new Error("delete affected 0 rows");
+        }
+        documents = documents.filter((d) => d.id !== id);
+        selectedDocIds.delete(id);
+        if (id === currentDocId) {
+          currentDocId = null;
+          setDocTitle("");
+          docGeneration++;
+          refreshCloudState();
+          localStorage.removeItem("mdtopdf-last-doc-id");
+        }
+        renderDocumentsPage();
+      }
+
+      function requestBulkDelete() {
+        const ids = Array.from(selectedDocIds);
+        if (!ids.length) return;
+        openConfirm({
+          title: `Delete ${ids.length} document${ids.length === 1 ? "" : "s"}?`,
+          body: "This action cannot be undone.",
+          actionLabel: "Delete",
+          onConfirm: () => bulkDeleteDocuments(ids),
+        });
+      }
+      async function bulkDeleteDocuments(ids) {
+        const { data, error } = await supabase
+          .from("drafts")
+          .delete()
+          .in("id", ids)
+          .select("id");
+        if (error) {
+          console.error(error);
+          showDocumentsNotice(mapDocError());
+          throw error;
+        }
+        const deletedIds = new Set((data || []).map((r) => r.id));
+        documents = documents.filter((d) => !deletedIds.has(d.id));
+        ids.forEach((id) => selectedDocIds.delete(id));
+        if (deletedIds.has(currentDocId)) {
+          currentDocId = null;
+          setDocTitle("");
+          docGeneration++;
+          refreshCloudState();
+          localStorage.removeItem("mdtopdf-last-doc-id");
+        }
+        if (deletedIds.size < ids.length) {
+          showDocumentsNotice(
+            "Some documents couldn't be deleted — you may not have permission.",
+          );
+        }
+        renderDocumentsPage();
+      }
+      documentsBulkClearBtn.addEventListener("click", () => {
+        selectedDocIds.clear();
+        renderDocumentsPage();
+      });
+      documentsBulkDeleteBtn.addEventListener("click", requestBulkDelete);
+
+      function toggleRowMenu(kebabBtn, doc, titleEl) {
+        const wasThis = kebabBtn.classList.contains("open");
+        closeRowMenu();
+        if (wasThis) return;
+        kebabBtn.classList.add("open");
+        const menu = document.createElement("div");
+        menu.className = "documents-row-menu";
+        menu.setAttribute("role", "menu");
+        menu.innerHTML =
+          '<button type="button" data-act="open">' + OPEN_ICON + "Open</button>" +
+          '<button type="button" data-act="rename">' + RENAME_ICON + "Rename</button>" +
+          '<button type="button" class="danger" data-act="delete">' + DELETE_ICON + "Delete</button>";
+        document.body.appendChild(menu);
+        const rect = kebabBtn.getBoundingClientRect();
+        menu.style.top = `${rect.bottom + 4}px`;
+        menu.style.right = `${window.innerWidth - rect.right}px`;
+        menu.querySelector('[data-act="open"]').addEventListener("click", (e) => {
+          e.stopPropagation();
+          closeRowMenu();
+          loadDocument(doc.id);
+        });
+        menu.querySelector('[data-act="rename"]').addEventListener("click", (e) => {
+          e.stopPropagation();
+          closeRowMenu();
+          startRowRename(doc, titleEl);
+        });
+        menu.querySelector('[data-act="delete"]').addEventListener("click", (e) => {
+          e.stopPropagation();
+          closeRowMenu();
+          requestDeleteDocument(doc.id);
+        });
+        function onDocClick(e) {
+          if (!menu.contains(e.target) && e.target !== kebabBtn) closeRowMenu();
+        }
+        document.addEventListener("click", onDocClick);
+        closeRowMenu = () => {
+          kebabBtn.classList.remove("open");
+          menu.remove();
+          document.removeEventListener("click", onDocClick);
+          closeRowMenu = () => {};
+        };
+      }
+
+      function renderDocumentsTable(list) {
+        documentsBody.innerHTML = "";
+        const table = document.createElement("div");
+        table.className = "documents-table";
+
+        const head = document.createElement("div");
+        head.className = "documents-table-head";
+        head.innerHTML =
+          '<span class="documents-col-check"><input type="checkbox" id="documentsSelectAll" aria-label="Select all"></span>' +
+          "<span>Name</span><span>Date</span>" +
+          '<span class="documents-col-size">Size</span><span></span>';
+        table.appendChild(head);
+        const selectAllCb = head.querySelector("#documentsSelectAll");
+        const allSelected = list.length > 0 && list.every((d) => selectedDocIds.has(d.id));
+        selectAllCb.checked = allSelected;
+        selectAllCb.indeterminate = !allSelected && list.some((d) => selectedDocIds.has(d.id));
+        selectAllCb.addEventListener("change", () => {
+          if (selectAllCb.checked) list.forEach((d) => selectedDocIds.add(d.id));
+          else list.forEach((d) => selectedDocIds.delete(d.id));
+          renderDocumentsPage();
+        });
+
+        for (const d of list) {
+          const row = document.createElement("div");
+          row.className = "documents-row";
+          row.addEventListener("click", () => loadDocument(d.id));
+
+          const checkWrap = document.createElement("div");
+          checkWrap.className = "documents-col-check";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = selectedDocIds.has(d.id);
+          checkbox.setAttribute("aria-label", "Select " + (d.title || "Untitled"));
+          checkbox.addEventListener("click", (e) => e.stopPropagation());
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) selectedDocIds.add(d.id);
+            else selectedDocIds.delete(d.id);
+            renderDocumentsPage();
+          });
+          checkWrap.appendChild(checkbox);
+
+          const nameWrap = document.createElement("div");
+          nameWrap.className = "documents-name";
+          const title = document.createElement("div");
+          title.className = "documents-name-title";
+          title.textContent = d.title || "Untitled";
+          nameWrap.appendChild(title);
+
+          const modified = document.createElement("div");
+          modified.className = "documents-col-modified";
+          modified.textContent = formatModified(d.updated_at);
+
+          const size = document.createElement("div");
+          size.className = "documents-col-size";
+          size.textContent = formatSize(d.content);
+
+          const menuWrap = document.createElement("div");
+          menuWrap.className = "documents-row-menu-wrap";
+          const kebab = document.createElement("button");
+          kebab.type = "button";
+          kebab.className = "documents-kebab";
+          kebab.setAttribute("aria-label", "Document actions");
+          kebab.innerHTML = KEBAB_ICON;
+          kebab.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleRowMenu(kebab, d, title);
+          });
+          menuWrap.appendChild(kebab);
+
+          row.appendChild(checkWrap);
+          row.appendChild(nameWrap);
+          row.appendChild(modified);
+          row.appendChild(size);
+          row.appendChild(menuWrap);
+          table.appendChild(row);
+        }
+        documentsBody.appendChild(table);
+      }
+
+      function updateBulkBar() {
+        const count = selectedDocIds.size;
+        documentsBulkBar.hidden = count === 0;
+        documentsBulkCount.textContent =
+          count + (count === 1 ? " document selected" : " documents selected");
+      }
+
+      function renderDocumentsPage() {
+        const signedIn = !!session && !sessionLoading;
+        documentsSearchWrap.hidden = !(signedIn && documentsLoaded && documents.length > 0);
+        if (sessionLoading) {
+          renderDocumentsSkeleton();
+          return;
+        }
+        if (!signedIn) {
+          selectedDocIds.clear();
+          updateBulkBar();
+          renderDocumentsSignedOut();
+          return;
+        }
+        if (documentsLoading && !documentsLoaded) {
+          renderDocumentsSkeleton();
+          return;
+        }
+        if (!documents.length) {
+          selectedDocIds.clear();
+          updateBulkBar();
+          renderDocumentsEmpty();
+          return;
+        }
+        const q = docSearch.trim().toLowerCase();
+        const visible = q
+          ? documents.filter((d) => (d.title || "Untitled").toLowerCase().includes(q))
+          : documents;
+        updateBulkBar();
+        if (!visible.length) {
+          renderDocumentsNoMatch();
+          return;
+        }
+        renderDocumentsTable(visible);
+      }
+      documentsSearchInput.addEventListener("input", () => {
+        docSearch = documentsSearchInput.value;
+        renderDocumentsPage();
+      });
+
+      accountForgotBtn.addEventListener("click", () => setAuthMode("reset"));
+      accountToggleBtn.addEventListener("click", () => {
+        const target = AUTH_MODE[authMode].toggleTarget;
+        if (target) setAuthMode(target);
+      });
+      signOutBtn.addEventListener("click", async () => {
+        closeAccountMenu();
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
+        } catch (err) {
+          console.error(err);
+          showDocumentsNotice("Couldn't sign out. Try again.");
+        }
+      });
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        setSubmitLoading(true);
+        accountHint.textContent = "";
+        accountHint.className = "auth-hint";
+        try {
+          if (authMode === "signin") {
+            const { error } = await supabase.auth.signInWithPassword({
+              email: emailInput.value.trim(),
+              password: passwordInput.value,
+            });
+            if (error) throw error;
+          } else if (authMode === "signup") {
+            const { error } = await supabase.auth.signUp({
+              email: emailInput.value.trim(),
+              password: passwordInput.value,
+            });
+            if (error) throw error;
+            accountHint.textContent =
+              "Check your email to confirm your account.";
+            accountHint.className = "auth-hint success";
+          } else if (authMode === "reset") {
+            const { error } = await supabase.auth.resetPasswordForEmail(
+              emailInput.value.trim(),
+              { redirectTo: window.location.origin + window.location.pathname },
+            );
+            if (error) throw error;
+            accountHint.textContent = "Check your email for a reset link.";
+            accountHint.className = "auth-hint success";
+          } else if (authMode === "recovery") {
+            const { error } = await supabase.auth.updateUser({
+              password: passwordInput.value,
+            });
+            if (error) throw error;
+            setAuthMode("signin");
+            accountHint.textContent = "Password updated.";
+            accountHint.className = "auth-hint success";
+          }
+        } catch (err) {
+          accountHint.textContent = mapAuthError(err);
+          accountHint.className = "auth-hint error";
+        } finally {
+          setSubmitLoading(false);
+        }
+      });
+
+      async function signInWithOAuth(provider) {
+        oauthGithubBtn.disabled = true;
+        oauthGoogleBtn.disabled = true;
+        accountHint.textContent = "";
+        accountHint.className = "auth-hint";
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+              redirectTo: window.location.origin + window.location.pathname,
+            },
+          });
+          if (error) throw error;
+        } catch (err) {
+          accountHint.textContent = mapAuthError(err);
+          accountHint.className = "auth-hint error";
+          oauthGithubBtn.disabled = false;
+          oauthGoogleBtn.disabled = false;
+        }
+      }
+      oauthGithubBtn.addEventListener("click", () =>
+        signInWithOAuth("github"),
+      );
+      oauthGoogleBtn.addEventListener("click", () =>
+        signInWithOAuth("google"),
+      );
+
+      supabase.auth.onAuthStateChange((event, sess) => {
+        if (event === "PASSWORD_RECOVERY") {
+          session = sess;
+          sessionLoading = false;
+          setAuthMode("recovery");
+          renderAccountUI();
+          openAuthModal("recovery");
+          return;
+        }
+        const wasSignedIn = !!session;
+        session = sess;
+        sessionLoading = false;
+        renderAccountUI();
+        if (session && !wasSignedIn) {
+          authOverlay.classList.remove("show");
+          if (pendingSaveIntent) {
+            pendingSaveIntent = false;
+            proceedSave();
+          } else {
+            restoreLastDocument();
+          }
+        } else if (!session && wasSignedIn) {
+          resetEditorForSignOut();
+        }
+      });
+
+      supabase.auth.getSession().then(({ data }) => {
+        session = data.session;
+        sessionLoading = false;
+        renderAccountUI();
+        if (session) restoreLastDocument();
+      });
     </script>
   </body>
 </html>
