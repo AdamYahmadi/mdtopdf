@@ -1,4 +1,9 @@
-<h1 align="center">mdtopdf</h1>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/brand/mdtopdf-logo-dark.png">
+    <img src="public/brand/mdtopdf-logo.png" alt="mdtopdf" height="40">
+  </picture>
+</p>
 
 <p align="center">
   Convert Markdown to clean, print-ready PDFs — with LaTeX math, syntax-highlighted code, and diagrams.
