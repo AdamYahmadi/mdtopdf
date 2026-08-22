@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mdtopdf</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
-    <link rel="shortcut icon" href="/favicon.svg?v=2" />
-    <link rel="mask-icon" href="/favicon.svg?v=2" color="#2f57d6" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=7" />
+    <link rel="shortcut icon" href="/favicon.svg?v=7" />
+    <link rel="mask-icon" href="/favicon.svg?v=7" color="#16181d" />
     <style>
       :root {
         --font-ui:
@@ -81,6 +81,9 @@
         z-index: 1;
       }
       .wordmark {
+        display: flex;
+        align-items: center;
+        gap: 7px;
         font-family: var(--font-mono);
         font-weight: 600;
         font-size: 14.5px;
@@ -88,6 +91,11 @@
         color: var(--ink);
         cursor: pointer;
         transition: opacity 0.12s ease;
+      }
+      .wordmark-icon {
+        width: 21px;
+        height: 16px;
+        flex-shrink: 0;
       }
       .wordmark:hover {
         opacity: 0.7;
@@ -2011,21 +2019,26 @@
           <path d="M9.5 4 5.5 8l4 4" />
         </svg>
       </button>
-      <div class="wordmark" id="wordmarkHome" title="mdtopdf" role="button" tabindex="0">mdtopdf</div>
-      <a
-        class="icon-btn"
-        href="https://github.com/AdamYahmadi/mdtopdf"
-        target="_blank"
-        rel="noopener"
-        title="GitHub"
-        aria-label="View on GitHub"
+      <div
+        class="wordmark"
+        id="wordmarkHome"
+        title="mdtopdf"
+        role="button"
+        tabindex="0"
       >
-        <svg viewBox="0 0 16 16" fill="currentColor">
+        <svg
+          class="wordmark-icon"
+          viewBox="0 0 16 12"
+          fill="currentColor"
+          aria-hidden="true"
+        >
           <path
-            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+            fill-rule="evenodd"
+            d="M0 12 L0 8 L4 8 L4 4 L8 4 L8 0 L16 0 L16 12 Z M10 2 H15 V3 H10 Z"
           />
         </svg>
-      </a>
+        mdtopdf
+      </div>
       <div class="spacer"></div>
       <div class="toolbar">
         <div class="toolbar-meta">
@@ -2074,6 +2087,20 @@
           </span>
         </button>
         <span class="head-divider"></span>
+        <a
+          class="icon-btn"
+          href="https://github.com/AdamYahmadi/mdtopdf"
+          target="_blank"
+          rel="noopener"
+          title="GitHub"
+          aria-label="View on GitHub"
+        >
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+            />
+          </svg>
+        </a>
         <div class="header-account">
           <div class="account-skeleton" id="accountSkeleton">
             <span class="sk avatar"></span>
@@ -2282,7 +2309,11 @@
           <button type="button" class="confirm-btn" id="saveDialogCancelBtn">
             Cancel
           </button>
-          <button type="button" class="confirm-btn primary" id="saveDialogConfirmBtn">
+          <button
+            type="button"
+            class="confirm-btn primary"
+            id="saveDialogConfirmBtn"
+          >
             Save document
           </button>
         </div>
@@ -2336,7 +2367,11 @@
         <div class="documents-bulk-bar" id="documentsBulkBar" hidden>
           <span id="documentsBulkCount">0 selected</span>
           <div class="documents-bulk-actions">
-            <button type="button" class="confirm-btn" id="documentsBulkClearBtn">
+            <button
+              type="button"
+              class="confirm-btn"
+              id="documentsBulkClearBtn"
+            >
               Clear
             </button>
             <button
@@ -2355,285 +2390,318 @@
 
     <div class="app-body">
       <main>
-      <section class="pane source">
-        <div class="pane-head">
-          <span class="eyebrow">Source</span>
-          <span class="spacer"></span>
-          <div class="toolbar-cloud-group" id="toolbarCloudGroup">
-            <button
-              type="button"
-              class="icon-btn"
-              id="newDocBtn"
-              title="New document"
-              aria-label="New document"
-              hidden
-            >
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+        <section class="pane source">
+          <div class="pane-head">
+            <span class="eyebrow">Source</span>
+            <span class="spacer"></span>
+            <div class="toolbar-cloud-group" id="toolbarCloudGroup">
+              <button
+                type="button"
+                class="icon-btn"
+                id="newDocBtn"
+                title="New document"
+                aria-label="New document"
+                hidden
               >
-                <path d="M5 2h4l3 3v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" />
-                <path d="M9 2v3h3" />
-                <path d="M8 8v4M6 10h4" />
-              </svg>
-            </button>
-            <span class="doc-title-label" id="docTitleLabel" hidden>
-              <span class="doc-title-name" id="docTitleName">Untitled</span>
-            </span>
-            <span class="head-divider" id="docTitleDivider" hidden></span>
-            <button type="button" class="cloud-btn" id="cloudBtn">
-              <svg
-                class="cloud-icon"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M4.5 12.5a3 3 0 0 1-.5-5.96 3.5 3.5 0 0 1 6.79-1.29A2.75 2.75 0 0 1 11.75 10.5v.02"
-                />
-                <path d="M4.5 12.5h7.25" />
-              </svg>
-              <svg
-                class="cloud-icon-saved"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M4.5 12.5a3 3 0 0 1-.5-5.96 3.5 3.5 0 0 1 6.79-1.29A2.75 2.75 0 0 1 11.75 10.5v.02"
-                />
-                <path d="M4.5 12.5h7.25" />
-                <path d="M5.7 9.1 7 10.4l2.6-2.7" />
-              </svg>
-              <span class="cloud-btn-spinner" aria-hidden="true"></span>
-              <span class="cloud-btn-label" id="cloudBtnLabel">Save to mdtopdf</span>
-            </button>
-            <span class="head-divider"></span>
-            <button type="button" class="nav-btn" id="docsNavBtn">
-              Documents
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M6.5 4.5 10.5 8l-4 3.5" />
-              </svg>
-            </button>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M5 2h4l3 3v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z"
+                  />
+                  <path d="M9 2v3h3" />
+                  <path d="M8 8v4M6 10h4" />
+                </svg>
+              </button>
+              <span class="doc-title-label" id="docTitleLabel" hidden>
+                <span class="doc-title-name" id="docTitleName">Untitled</span>
+              </span>
+              <span class="head-divider" id="docTitleDivider" hidden></span>
+              <button type="button" class="cloud-btn" id="cloudBtn">
+                <svg
+                  class="cloud-icon"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4.5 12.5a3 3 0 0 1-.5-5.96 3.5 3.5 0 0 1 6.79-1.29A2.75 2.75 0 0 1 11.75 10.5v.02"
+                  />
+                  <path d="M4.5 12.5h7.25" />
+                </svg>
+                <svg
+                  class="cloud-icon-saved"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4.5 12.5a3 3 0 0 1-.5-5.96 3.5 3.5 0 0 1 6.79-1.29A2.75 2.75 0 0 1 11.75 10.5v.02"
+                  />
+                  <path d="M4.5 12.5h7.25" />
+                  <path d="M5.7 9.1 7 10.4l2.6-2.7" />
+                </svg>
+                <span class="cloud-btn-spinner" aria-hidden="true"></span>
+                <span class="cloud-btn-label" id="cloudBtnLabel"
+                  >Save to mdtopdf</span
+                >
+              </button>
+              <span class="head-divider"></span>
+              <button type="button" class="nav-btn" id="docsNavBtn">
+                Documents
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M6.5 4.5 10.5 8l-4 3.5" />
+                </svg>
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="editor">
-          <pre id="highlight" aria-hidden="true"></pre>
-          <textarea
-            id="editor"
-            spellcheck="false"
-            placeholder="Start typing markdown…"
-          ></textarea>
-        </div>
-      </section>
+          <div class="editor">
+            <pre id="highlight" aria-hidden="true"></pre>
+            <textarea
+              id="editor"
+              spellcheck="false"
+              placeholder="Start typing markdown…"
+            ></textarea>
+          </div>
+        </section>
 
-      <section class="pane preview">
-        <div class="pane-head">
-          <div class="view-toggle" role="group" aria-label="Preview mode">
-            <button
-              type="button"
-              class="view-toggle-btn"
-              id="viewContinuous"
-              data-view="continuous"
-              aria-pressed="false"
-            >
-              Continuous
-            </button>
-            <button
-              type="button"
-              class="view-toggle-btn"
-              id="viewPages"
-              data-view="pages"
-              aria-pressed="true"
-            >
-              Pages
-            </button>
-          </div>
-          <div class="spacer"></div>
-          <div class="theme-picker" id="themePicker">
-            <button
-              type="button"
-              class="theme-trigger"
-              id="themeTrigger"
-              aria-haspopup="listbox"
-              aria-expanded="false"
-              title="Syntax highlighting theme for code blocks"
-            >
-              <svg
-                class="code-icon"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+        <section class="pane preview">
+          <div class="pane-head">
+            <div class="view-toggle" role="group" aria-label="Preview mode">
+              <button
+                type="button"
+                class="view-toggle-btn"
+                id="viewContinuous"
+                data-view="continuous"
+                aria-pressed="false"
               >
-                <path d="M5.5 4.5 2.5 8l3 3.5M10.5 4.5 13.5 8l-3 3.5" />
-              </svg>
-              <span class="theme-trigger-label">Code theme</span>
-              <span class="theme-trigger-value" id="themeCurrent">Light</span>
+                Continuous
+              </button>
+              <button
+                type="button"
+                class="view-toggle-btn"
+                id="viewPages"
+                data-view="pages"
+                aria-pressed="true"
+              >
+                Pages
+              </button>
+            </div>
+            <div class="spacer"></div>
+            <div class="theme-picker" id="themePicker">
+              <button
+                type="button"
+                class="theme-trigger"
+                id="themeTrigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                title="Syntax highlighting theme for code blocks"
+              >
+                <svg
+                  class="code-icon"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5.5 4.5 2.5 8l3 3.5M10.5 4.5 13.5 8l-3 3.5" />
+                </svg>
+                <span class="theme-trigger-label">Code theme</span>
+                <span class="theme-trigger-value" id="themeCurrent">Light</span>
+                <svg
+                  class="chevron"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                  stroke-linecap="round"
+                >
+                  <path d="M2.5 4 5 6.5 7.5 4" />
+                </svg>
+              </button>
+              <div
+                class="theme-menu"
+                id="themeMenu"
+                role="listbox"
+                aria-label="Code highlighting theme"
+                hidden
+              >
+                <div class="theme-menu-head">Syntax highlighting</div>
+                <button
+                  type="button"
+                  class="theme-option"
+                  role="option"
+                  data-theme="light"
+                  data-label="Light"
+                >
+                  <span
+                    class="sw"
+                    style="
+                      --a: #fafafa;
+                      --b: #a626a4;
+                      --c: #50a14f;
+                      --d: #4078f2;
+                    "
+                  ></span
+                  >Light<span class="tag">light</span>
+                </button>
+                <button
+                  type="button"
+                  class="theme-option"
+                  role="option"
+                  data-theme="github"
+                  data-label="GitHub"
+                >
+                  <span
+                    class="sw"
+                    style="
+                      --a: #f6f8fa;
+                      --b: #cf222e;
+                      --c: #0a3069;
+                      --d: #0550ae;
+                    "
+                  ></span
+                  >GitHub<span class="tag">light</span>
+                </button>
+                <button
+                  type="button"
+                  class="theme-option"
+                  role="option"
+                  data-theme="github-dark"
+                  data-label="GitHub Dark"
+                >
+                  <span
+                    class="sw"
+                    style="
+                      --a: #0d1117;
+                      --b: #ff7b72;
+                      --c: #a5d6ff;
+                      --d: #79c0ff;
+                    "
+                  ></span
+                  >GitHub Dark<span class="tag">dark</span>
+                </button>
+                <button
+                  type="button"
+                  class="theme-option"
+                  role="option"
+                  data-theme="one-dark"
+                  data-label="One Dark"
+                >
+                  <span
+                    class="sw"
+                    style="
+                      --a: #282c34;
+                      --b: #c678dd;
+                      --c: #98c379;
+                      --d: #61afef;
+                    "
+                  ></span
+                  >One Dark<span class="tag">dark</span>
+                </button>
+                <button
+                  type="button"
+                  class="theme-option"
+                  role="option"
+                  data-theme="tokyo-night"
+                  data-label="Tokyo Night"
+                >
+                  <span
+                    class="sw"
+                    style="
+                      --a: #1a1b26;
+                      --b: #bb9af7;
+                      --c: #9ece6a;
+                      --d: #7aa2f7;
+                    "
+                  ></span
+                  >Tokyo Night<span class="tag">dark</span>
+                </button>
+              </div>
+            </div>
+            <span class="head-divider"></span>
+            <div class="stepper" role="group" aria-label="Preview text size">
+              <button id="sizeDown" aria-label="Decrease text size">
+                &minus;
+              </button>
+              <span id="sizeVal" title="Preview text size">14</span>
+              <button id="sizeUp" aria-label="Increase text size">+</button>
+            </div>
+          </div>
+          <div class="proof" id="proof">
+            <div class="empty" id="empty">
               <svg
-                class="chevron"
-                viewBox="0 0 10 10"
+                class="empty-icon"
+                viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="1.3"
                 stroke-linecap="round"
+                stroke-linejoin="round"
               >
-                <path d="M2.5 4 5 6.5 7.5 4" />
+                <path
+                  d="M6 2.5h9l3 3V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z"
+                />
+                <path d="M15 2.5V6h3M9 12h6M9 15.5h6M9 8.5h3" />
               </svg>
-            </button>
-            <div
-              class="theme-menu"
-              id="themeMenu"
-              role="listbox"
-              aria-label="Code highlighting theme"
-              hidden
-            >
-              <div class="theme-menu-head">Syntax highlighting</div>
-              <button
-                type="button"
-                class="theme-option"
-                role="option"
-                data-theme="light"
-                data-label="Light"
-              >
-                <span
-                  class="sw"
-                  style="--a: #fafafa; --b: #a626a4; --c: #50a14f; --d: #4078f2"
-                ></span
-                >Light<span class="tag">light</span>
-              </button>
-              <button
-                type="button"
-                class="theme-option"
-                role="option"
-                data-theme="github"
-                data-label="GitHub"
-              >
-                <span
-                  class="sw"
-                  style="--a: #f6f8fa; --b: #cf222e; --c: #0a3069; --d: #0550ae"
-                ></span
-                >GitHub<span class="tag">light</span>
-              </button>
-              <button
-                type="button"
-                class="theme-option"
-                role="option"
-                data-theme="github-dark"
-                data-label="GitHub Dark"
-              >
-                <span
-                  class="sw"
-                  style="--a: #0d1117; --b: #ff7b72; --c: #a5d6ff; --d: #79c0ff"
-                ></span
-                >GitHub Dark<span class="tag">dark</span>
-              </button>
-              <button
-                type="button"
-                class="theme-option"
-                role="option"
-                data-theme="one-dark"
-                data-label="One Dark"
-              >
-                <span
-                  class="sw"
-                  style="--a: #282c34; --b: #c678dd; --c: #98c379; --d: #61afef"
-                ></span
-                >One Dark<span class="tag">dark</span>
-              </button>
-              <button
-                type="button"
-                class="theme-option"
-                role="option"
-                data-theme="tokyo-night"
-                data-label="Tokyo Night"
-              >
-                <span
-                  class="sw"
-                  style="--a: #1a1b26; --b: #bb9af7; --c: #9ece6a; --d: #7aa2f7"
-                ></span
-                >Tokyo Night<span class="tag">dark</span>
-              </button>
+              <span class="empty-text"
+                ><span class="empty-title"></span><span class="empty-sub"></span
+              ></span>
             </div>
           </div>
-          <span class="head-divider"></span>
-          <div class="stepper" role="group" aria-label="Preview text size">
-            <button id="sizeDown" aria-label="Decrease text size">
-              &minus;
-            </button>
-            <span id="sizeVal" title="Preview text size">14</span>
-            <button id="sizeUp" aria-label="Increase text size">+</button>
+          <div class="proof-continuous" id="proofContinuous" hidden>
+            <iframe
+              id="continuousFrameA"
+              class="continuous-frame active"
+              title="Continuous preview"
+            ></iframe>
+            <iframe
+              id="continuousFrameB"
+              class="continuous-frame"
+              title="Continuous preview"
+              aria-hidden="true"
+            ></iframe>
+            <div class="empty" id="emptyContinuous">
+              <svg
+                class="empty-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M6 2.5h9l3 3V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z"
+                />
+                <path d="M15 2.5V6h3M9 12h6M9 15.5h6M9 8.5h3" />
+              </svg>
+              <span class="empty-text"
+                ><span class="empty-title"></span><span class="empty-sub"></span
+              ></span>
+            </div>
           </div>
-        </div>
-        <div class="proof" id="proof">
-          <div class="empty" id="empty">
-            <svg
-              class="empty-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M6 2.5h9l3 3V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z" />
-              <path d="M15 2.5V6h3M9 12h6M9 15.5h6M9 8.5h3" />
-            </svg>
-            <span class="empty-text"
-              ><span class="empty-title"></span><span class="empty-sub"></span
-            ></span>
-          </div>
-        </div>
-        <div class="proof-continuous" id="proofContinuous" hidden>
-          <iframe
-            id="continuousFrameA"
-            class="continuous-frame active"
-            title="Continuous preview"
-          ></iframe>
-          <iframe
-            id="continuousFrameB"
-            class="continuous-frame"
-            title="Continuous preview"
-            aria-hidden="true"
-          ></iframe>
-          <div class="empty" id="emptyContinuous">
-            <svg
-              class="empty-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M6 2.5h9l3 3V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z" />
-              <path d="M15 2.5V6h3M9 12h6M9 15.5h6M9 8.5h3" />
-            </svg>
-            <span class="empty-text"
-              ><span class="empty-title"></span><span class="empty-sub"></span
-            ></span>
-          </div>
-        </div>
-      </section>
+        </section>
       </main>
     </div>
 
@@ -3370,20 +3438,36 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
 
       const saveDialogOverlay = document.getElementById("saveDialogOverlay");
       const saveDialogName = document.getElementById("saveDialogName");
-      const saveDialogCancelBtn = document.getElementById("saveDialogCancelBtn");
-      const saveDialogConfirmBtn = document.getElementById("saveDialogConfirmBtn");
+      const saveDialogCancelBtn = document.getElementById(
+        "saveDialogCancelBtn",
+      );
+      const saveDialogConfirmBtn = document.getElementById(
+        "saveDialogConfirmBtn",
+      );
 
       const documentsPage = document.getElementById("documentsPage");
       const documentsSubtitle = document.getElementById("documentsSubtitle");
-      const documentsSearchWrap = document.getElementById("documentsSearchWrap");
-      const documentsSearchInput = document.getElementById("documentsSearchInput");
+      const documentsSearchWrap = document.getElementById(
+        "documentsSearchWrap",
+      );
+      const documentsSearchInput = document.getElementById(
+        "documentsSearchInput",
+      );
       const documentsNotice = document.getElementById("documentsNotice");
-      const documentsNoticeText = document.getElementById("documentsNoticeText");
-      const documentsNoticeDismiss = document.getElementById("documentsNoticeDismiss");
+      const documentsNoticeText = document.getElementById(
+        "documentsNoticeText",
+      );
+      const documentsNoticeDismiss = document.getElementById(
+        "documentsNoticeDismiss",
+      );
       const documentsBulkBar = document.getElementById("documentsBulkBar");
       const documentsBulkCount = document.getElementById("documentsBulkCount");
-      const documentsBulkClearBtn = document.getElementById("documentsBulkClearBtn");
-      const documentsBulkDeleteBtn = document.getElementById("documentsBulkDeleteBtn");
+      const documentsBulkClearBtn = document.getElementById(
+        "documentsBulkClearBtn",
+      );
+      const documentsBulkDeleteBtn = document.getElementById(
+        "documentsBulkDeleteBtn",
+      );
       const documentsBody = document.getElementById("documentsBody");
 
       let session = null;
@@ -3507,18 +3591,23 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
         const m = msg.toLowerCase();
         if (m.includes("invalid login credentials"))
           return "Incorrect email or password.";
-        if (m.includes("user already registered") || m.includes("already registered"))
+        if (
+          m.includes("user already registered") ||
+          m.includes("already registered")
+        )
           return "An account with that email already exists.";
         if (m.includes("email not confirmed"))
           return "Please confirm your email before signing in.";
-        if (m.includes("password should be at least") || m.includes("at least 6"))
+        if (
+          m.includes("password should be at least") ||
+          m.includes("at least 6")
+        )
           return "Password must be at least 6 characters.";
         if (m.includes("rate limit") || m.includes("too many"))
           return "Too many attempts. Try again in a moment.";
         if (m.includes("failed to fetch") || m.includes("network"))
           return "Network error — check your connection and try again.";
-        if (m.includes("valid email"))
-          return "Enter a valid email address.";
+        if (m.includes("valid email")) return "Enter a valid email address.";
         return "Something went wrong. Please try again.";
       }
 
@@ -3564,7 +3653,10 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
         accountMenu.hidden ? openAccountMenu() : closeAccountMenu();
       });
       document.addEventListener("click", (e) => {
-        if (!accountControl.contains(e.target) && !accountMenu.contains(e.target))
+        if (
+          !accountControl.contains(e.target) &&
+          !accountMenu.contains(e.target)
+        )
           closeAccountMenu();
       });
       window.addEventListener("keydown", (e) => {
@@ -3724,11 +3816,18 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
         }
       }
 
-      function openConfirm({ title, body, actionLabel, danger = true, onConfirm }) {
+      function openConfirm({
+        title,
+        body,
+        actionLabel,
+        danger = true,
+        onConfirm,
+      }) {
         confirmTitle.textContent = title;
         confirmBody.textContent = body;
         confirmActionBtn.textContent = actionLabel;
-        confirmActionBtn.className = "confirm-btn" + (danger ? " danger" : " primary");
+        confirmActionBtn.className =
+          "confirm-btn" + (danger ? " danger" : " primary");
         confirmPendingAction = onConfirm;
         confirmOverlay.classList.add("show");
       }
@@ -3937,19 +4036,37 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
         if (!iso) return "—";
         const d = new Date(iso);
         const now = new Date();
-        const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
-        const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
-        const time = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        const startOfDay = (x) =>
+          new Date(x.getFullYear(), x.getMonth(), x.getDate());
+        const diffDays = Math.round(
+          (startOfDay(now) - startOfDay(d)) / 86400000,
+        );
+        const time = d.toLocaleTimeString(undefined, {
+          hour: "numeric",
+          minute: "2-digit",
+        });
         if (diffDays === 0) return "Today, " + time;
         if (diffDays === 1) return "Yesterday, " + time;
         if (d.getFullYear() === now.getFullYear())
-          return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ", " + time;
-        return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+          return (
+            d.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            }) +
+            ", " +
+            time
+          );
+        return d.toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
       }
       function formatSize(content) {
         const bytes = new TextEncoder().encode(content || "").length;
         if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB";
+        if (bytes < 1024 * 1024)
+          return (bytes / 1024).toFixed(bytes < 10240 ? 1 : 0) + " KB";
         return (bytes / 1024 / 1024).toFixed(1) + " MB";
       }
 
@@ -4124,28 +4241,40 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
         menu.className = "documents-row-menu";
         menu.setAttribute("role", "menu");
         menu.innerHTML =
-          '<button type="button" data-act="open">' + OPEN_ICON + "Open</button>" +
-          '<button type="button" data-act="rename">' + RENAME_ICON + "Rename</button>" +
-          '<button type="button" class="danger" data-act="delete">' + DELETE_ICON + "Delete</button>";
+          '<button type="button" data-act="open">' +
+          OPEN_ICON +
+          "Open</button>" +
+          '<button type="button" data-act="rename">' +
+          RENAME_ICON +
+          "Rename</button>" +
+          '<button type="button" class="danger" data-act="delete">' +
+          DELETE_ICON +
+          "Delete</button>";
         document.body.appendChild(menu);
         const rect = kebabBtn.getBoundingClientRect();
         menu.style.top = `${rect.bottom + 4}px`;
         menu.style.right = `${window.innerWidth - rect.right}px`;
-        menu.querySelector('[data-act="open"]').addEventListener("click", (e) => {
-          e.stopPropagation();
-          closeRowMenu();
-          loadDocument(doc.id);
-        });
-        menu.querySelector('[data-act="rename"]').addEventListener("click", (e) => {
-          e.stopPropagation();
-          closeRowMenu();
-          startRowRename(doc, titleEl);
-        });
-        menu.querySelector('[data-act="delete"]').addEventListener("click", (e) => {
-          e.stopPropagation();
-          closeRowMenu();
-          requestDeleteDocument(doc.id);
-        });
+        menu
+          .querySelector('[data-act="open"]')
+          .addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeRowMenu();
+            loadDocument(doc.id);
+          });
+        menu
+          .querySelector('[data-act="rename"]')
+          .addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeRowMenu();
+            startRowRename(doc, titleEl);
+          });
+        menu
+          .querySelector('[data-act="delete"]')
+          .addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeRowMenu();
+            requestDeleteDocument(doc.id);
+          });
         function onDocClick(e) {
           if (!menu.contains(e.target) && e.target !== kebabBtn) closeRowMenu();
         }
@@ -4171,11 +4300,14 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
           '<span class="documents-col-size">Size</span><span></span>';
         table.appendChild(head);
         const selectAllCb = head.querySelector("#documentsSelectAll");
-        const allSelected = list.length > 0 && list.every((d) => selectedDocIds.has(d.id));
+        const allSelected =
+          list.length > 0 && list.every((d) => selectedDocIds.has(d.id));
         selectAllCb.checked = allSelected;
-        selectAllCb.indeterminate = !allSelected && list.some((d) => selectedDocIds.has(d.id));
+        selectAllCb.indeterminate =
+          !allSelected && list.some((d) => selectedDocIds.has(d.id));
         selectAllCb.addEventListener("change", () => {
-          if (selectAllCb.checked) list.forEach((d) => selectedDocIds.add(d.id));
+          if (selectAllCb.checked)
+            list.forEach((d) => selectedDocIds.add(d.id));
           else list.forEach((d) => selectedDocIds.delete(d.id));
           renderDocumentsPage();
         });
@@ -4190,7 +4322,10 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = selectedDocIds.has(d.id);
-          checkbox.setAttribute("aria-label", "Select " + (d.title || "Untitled"));
+          checkbox.setAttribute(
+            "aria-label",
+            "Select " + (d.title || "Untitled"),
+          );
           checkbox.addEventListener("click", (e) => e.stopPropagation());
           checkbox.addEventListener("change", () => {
             if (checkbox.checked) selectedDocIds.add(d.id);
@@ -4246,7 +4381,11 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
 
       function renderDocumentsPage() {
         const signedIn = !!session && !sessionLoading;
-        documentsSearchWrap.hidden = !(signedIn && documentsLoaded && documents.length > 0);
+        documentsSearchWrap.hidden = !(
+          signedIn &&
+          documentsLoaded &&
+          documents.length > 0
+        );
         if (sessionLoading) {
           renderDocumentsSkeleton();
           return;
@@ -4269,7 +4408,9 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
         }
         const q = docSearch.trim().toLowerCase();
         const visible = q
-          ? documents.filter((d) => (d.title || "Untitled").toLowerCase().includes(q))
+          ? documents.filter((d) =>
+              (d.title || "Untitled").toLowerCase().includes(q),
+            )
           : documents;
         updateBulkBar();
         if (!visible.length) {
@@ -4365,12 +4506,8 @@ parameters $\\beta_0 = 2$, $\\beta_1 = 3$:
           oauthGoogleBtn.disabled = false;
         }
       }
-      oauthGithubBtn.addEventListener("click", () =>
-        signInWithOAuth("github"),
-      );
-      oauthGoogleBtn.addEventListener("click", () =>
-        signInWithOAuth("google"),
-      );
+      oauthGithubBtn.addEventListener("click", () => signInWithOAuth("github"));
+      oauthGoogleBtn.addEventListener("click", () => signInWithOAuth("google"));
 
       supabase.auth.onAuthStateChange((event, sess) => {
         if (event === "PASSWORD_RECOVERY") {
