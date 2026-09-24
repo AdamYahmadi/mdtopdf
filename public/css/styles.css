@@ -1760,15 +1760,12 @@ main {
 
 .tok-head {
   color: var(--t-head);
-  font-weight: 700;
 }
 .tok-strong {
   color: var(--t-strong);
-  font-weight: 700;
 }
 .tok-em {
   color: var(--t-em);
-  font-style: italic;
 }
 .tok-code {
   color: var(--t-code);
@@ -1789,11 +1786,9 @@ main {
 }
 .tok-quote {
   color: var(--t-quote);
-  font-style: italic;
 }
 .tok-list {
   color: var(--t-list);
-  font-weight: 600;
 }
 .tok-punct {
   color: var(--t-punct);

@@ -300,8 +300,6 @@ supabase.auth.onAuthStateChange((event, sess) => {
     if (pendingSaveIntent) {
       pendingSaveIntent = false;
       proceedSave();
-    } else {
-      restoreLastDocument();
     }
   } else if (!session && wasSignedIn) {
     resetEditorForSignOut();
@@ -312,5 +310,4 @@ supabase.auth.getSession().then(({ data }) => {
   session = data.session;
   sessionLoading = false;
   renderAccountUI();
-  if (session) restoreLastDocument();
 });

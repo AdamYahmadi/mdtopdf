@@ -108,10 +108,20 @@ function highlightMd(src) {
   });
   return out.join("\n") + "\n";
 }
+function syncGutter() {
+  const gutter = editor.offsetWidth - editor.clientWidth;
+  highlight.style.paddingRight = 22 + gutter + "px";
+}
+
 function renderHighlight() {
   highlight.innerHTML = highlightMd(editor.value);
+  syncGutter();
   highlight.scrollTop = editor.scrollTop;
   highlight.scrollLeft = editor.scrollLeft;
+}
+
+if (typeof ResizeObserver !== "undefined") {
+  new ResizeObserver(syncGutter).observe(editor);
 }
 
 editor.addEventListener("scroll", () => {

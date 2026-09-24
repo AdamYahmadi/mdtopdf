@@ -183,7 +183,6 @@ async function performSave(title) {
       setDocTitle(title);
       pendingNewTitle = "";
       lastSavedSnapshot = content;
-      localStorage.setItem("mdtopdf-last-doc-id", currentDocId);
       setCloudState("saved");
     }
     documentsLoaded = false;
@@ -210,7 +209,6 @@ function newDocument() {
   schedulePreview();
   lastSavedSnapshot = "";
   setCloudState("unsaved");
-  localStorage.removeItem("mdtopdf-last-doc-id");
   editor.focus();
 }
 function triggerNewDocument() {
@@ -257,29 +255,6 @@ async function loadDocument(id) {
   schedulePreview();
   lastSavedSnapshot = editor.value;
   setCloudState("saved");
-  localStorage.setItem("mdtopdf-last-doc-id", data.id);
-}
-
-async function restoreLastDocument() {
-  const savedId = localStorage.getItem("mdtopdf-last-doc-id");
-  if (!savedId) return;
-  const { data, error } = await supabase
-    .from("drafts")
-    .select("id,title,content")
-    .eq("id", savedId)
-    .maybeSingle();
-  if (error || !data) {
-    localStorage.removeItem("mdtopdf-last-doc-id");
-    return;
-  }
-  currentDocId = data.id;
-  setDocTitle(data.title || "Untitled");
-  pendingNewTitle = "";
-  editor.value = data.content || "";
-  renderHighlight();
-  schedulePreview();
-  lastSavedSnapshot = editor.value;
-  setCloudState("saved");
 }
 
 function resetEditorForSignOut() {
@@ -298,7 +273,6 @@ function resetEditorForSignOut() {
   schedulePreview();
   lastSavedSnapshot = "";
   setCloudState("unsaved");
-  localStorage.removeItem("mdtopdf-last-doc-id");
   if (currentView === "documents") renderDocumentsPage();
 }
 
@@ -489,7 +463,6 @@ async function deleteDocument(id) {
     setDocTitle("");
     docGeneration++;
     refreshCloudState();
-    localStorage.removeItem("mdtopdf-last-doc-id");
   }
   renderDocumentsPage();
 }
@@ -523,7 +496,6 @@ async function bulkDeleteDocuments(ids) {
     setDocTitle("");
     docGeneration++;
     refreshCloudState();
-    localStorage.removeItem("mdtopdf-last-doc-id");
   }
   if (deletedIds.size < ids.length) {
     showDocumentsNotice(
