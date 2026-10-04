@@ -47,7 +47,7 @@ mdtopdf notes.md
 ### Linux / macOS
 
 ```bash
-git clone https://github.com/AdamYahmadi/mdtopdf.git
+git clone https://github.com/AdemYahmadi/mdtopdf.git
 cd mdtopdf
 npm install
 chmod +x mdtopdf
@@ -178,7 +178,7 @@ mdtopdf notes.md --size 16
 A browser-based editor with **live preview** and one-click PDF download runs the
 **same pipeline** as the CLI.
 
-**Try it now:** **[mdtopdf.adamyahmadi.com](https://mdtopdf.adamyahmadi.com/)**
+**Try it now:** **[mdtopdf.ademyahmadi.com](https://mdtopdf.ademyahmadi.com/)**
 
 Or run it locally:
 
